@@ -5,177 +5,467 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ site.title }} | {{ site.tagline }}</title>
+  <title>{{ site.title | default: "Eficiencia & Norma" }} | Revista de Análisis Económico del Derecho</title>
   <style>
     :root {
-      --font-serif: "Merriweather", "Georgia", "Times New Roman", serif;
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --color-dark: #1a1a1a;
-      --color-border: #222;
-      --color-muted: #555;
+      --serif: "Merriweather", "Georgia", "Times New Roman", serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --burgundy: #7b1113;
+      --ink: #111111;
+      --muted: #555555;
+      --border-gray: #e2e2e2;
+      --bg-cream: #fdfdfc;
+      --bg-card: #f8f8f6;
     }
     body {
-      max-width: 1040px;
+      max-width: 1120px;
       margin: 0 auto;
-      padding: 24px 20px;
-      font-family: var(--font-serif);
-      color: var(--color-dark);
-      background-color: #fcfcfb;
-      line-height: 1.6;
+      padding: 20px 24px 60px;
+      font-family: var(--serif);
+      color: var(--ink);
+      background-color: var(--bg-cream);
+      line-height: 1.65;
     }
-    /* Encabezado Académico / Periódico */
-    .top-bar {
+    /* Barra Superior */
+    .top-meta {
       display: flex;
       justify-content: space-between;
-      font-family: var(--font-sans);
-      font-size: 0.82rem;
+      align-items: center;
+      font-family: var(--sans);
+      font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 6px;
-      color: var(--color-muted);
+      border-bottom: 1px solid var(--border-gray);
+      padding-bottom: 8px;
+      color: var(--muted);
     }
-    .masthead {
+    .convocatoria-badge {
+      background-color: var(--burgundy);
+      color: #fff !important;
+      padding: 5px 12px;
+      border-radius: 3px;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    /* Cabecera / Masthead */
+    .header-main {
       text-align: center;
-      padding: 25px 0 15px;
+      padding: 30px 0 16px;
     }
-    .masthead h1 {
-      font-size: 3.4rem;
+    .header-main h1 {
+      font-size: 3.6rem;
       font-weight: 900;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.025em;
       margin: 0;
-      line-height: 1.1;
       text-transform: uppercase;
+      line-height: 1;
     }
-    .masthead .tagline {
+    .header-main .subtitle {
       font-style: italic;
       font-size: 1.15rem;
       color: #333;
-      margin-top: 8px;
+      margin-top: 10px;
     }
-    .divider-double {
-      border: none;
-      border-top: 3px double var(--color-border);
-      margin: 15px 0 30px;
+    /* Navegación por Secciones */
+    .nav-bar {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      border-top: 3px double #222;
+      border-bottom: 1px solid #222;
+      padding: 10px 0;
+      margin: 18px 0 32px;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
     }
-    /* Grilla de Artículos */
-    .newspaper-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 36px;
-    }
-    @media (max-width: 768px) {
-      .newspaper-grid { grid-template-columns: 1fr; }
-      .masthead h1 { font-size: 2.3rem; }
-    }
-    /* Artículo Principal */
-    .lead-post {
-      border-right: 1px solid #e0e0e0;
-      padding-right: 32px;
-    }
-    @media (max-width: 768px) {
-      .lead-post { border-right: none; padding-right: 0; }
-    }
-    .lead-post h2 {
-      font-size: 2rem;
-      line-height: 1.25;
-      margin-top: 0;
-    }
-    .lead-post a, .side-post a {
-      color: var(--color-dark);
+    .nav-bar a {
+      color: var(--ink);
       text-decoration: none;
     }
-    .lead-post a:hover, .side-post a:hover {
+    .nav-bar a:hover {
+      color: var(--burgundy);
+    }
+    /* Grilla Principal de Noticias */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 40px;
+      margin-bottom: 50px;
+    }
+    @media (max-width: 840px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .header-main h1 { font-size: 2.4rem; }
+    }
+    /* Noticia Principal (Lead Story) */
+    .lead-story {
+      border-right: 1px solid var(--border-gray);
+      padding-right: 36px;
+    }
+    @media (max-width: 840px) {
+      .lead-story { border-right: none; padding-right: 0; }
+    }
+    .lead-badge {
+      display: inline-block;
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--burgundy);
+      margin-bottom: 8px;
+    }
+    .lead-story h2 {
+      font-size: 2.2rem;
+      line-height: 1.22;
+      margin: 0 0 12px;
+    }
+    .lead-story a, .side-card a {
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .lead-story a:hover, .side-card a:hover {
       text-decoration: underline;
     }
-    .meta {
-      font-family: var(--font-sans);
+    .lead-meta {
+      font-family: var(--sans);
       font-size: 0.85rem;
-      color: var(--color-muted);
-      margin-bottom: 14px;
+      color: var(--muted);
+      margin-bottom: 16px;
     }
-    .meta .category {
-      font-weight: 700;
-      color: #7b1113; /* Borgoña académico */
+    .takeaway-box {
+      background-color: var(--bg-card);
+      border-left: 4px solid var(--burgundy);
+      padding: 14px 18px;
+      margin: 20px 0;
+      font-family: var(--sans);
+      font-size: 0.92rem;
+    }
+    .takeaway-box strong {
+      display: block;
+      margin-bottom: 6px;
       text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+      color: var(--burgundy);
     }
-    .side-post {
-      margin-bottom: 24px;
-      padding-bottom: 18px;
-      border-bottom: 1px solid #eee;
+    /* Sidebar */
+    .sidebar h3 {
+      font-family: var(--sans);
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      border-bottom: 2px solid #222;
+      padding-bottom: 6px;
+      margin-top: 0;
     }
-    .side-post h3 {
+    .side-card {
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-gray);
+    }
+    .side-card h4 {
+      font-size: 1.15rem;
+      margin: 6px 0;
+      line-height: 1.35;
+    }
+    /* SECCIONES EDITORIALES DESGLOSADAS */
+    .editorial-sections-block {
+      border-top: 2px solid #222;
+      padding-top: 36px;
+      margin-top: 40px;
+    }
+    .section-block-title {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .section-block-title h3 {
+      font-size: 1.9rem;
+      margin: 0 0 6px;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+    }
+    .section-block-title p {
+      font-family: var(--sans);
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin: 0;
+    }
+    .sections-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 50px;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border: 1px solid #e7e7e4;
+      border-top: 4px solid var(--burgundy);
+      padding: 22px 20px;
+      border-radius: 4px;
+    }
+    .theme-card h4 {
+      margin: 0 0 10px;
       font-size: 1.25rem;
       line-height: 1.3;
-      margin-bottom: 6px;
+      color: var(--ink);
     }
-    footer {
-      margin-top: 50px;
-      padding-top: 20px;
-      border-top: 1px solid #ccc;
-      text-align: center;
-      font-family: var(--font-sans);
+    .theme-card .scope {
+      font-family: var(--sans);
       font-size: 0.82rem;
-      color: var(--color-muted);
+      font-weight: 700;
+      color: var(--burgundy);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+    .theme-card p {
+      font-size: 0.95rem;
+      color: #333;
+      margin: 0 0 12px;
+      line-height: 1.55;
+    }
+    .theme-card ul {
+      margin: 0;
+      padding-left: 18px;
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      color: #444;
+      line-height: 1.5;
+    }
+    /* BLOQUE DE CONVOCATORIA Y GOOGLE FORM */
+    .form-wrapper {
+      background-color: #ffffff;
+      border: 1px solid #dfdfdc;
+      border-top: 5px solid var(--burgundy);
+      padding: 40px 24px;
+      border-radius: 6px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+      margin-top: 50px;
+    }
+    .form-header {
+      text-align: center;
+      max-width: 780px;
+      margin: 0 auto 30px;
+    }
+    .form-header h3 {
+      font-size: 2.1rem;
+      margin: 0 0 10px;
+      text-transform: uppercase;
+      color: var(--burgundy);
+    }
+    .form-header p {
+      font-family: var(--sans);
+      font-size: 0.98rem;
+      color: #444;
+      line-height: 1.6;
+    }
+    .form-container {
+      display: flex;
+      justify-content: center;
+    }
+    iframe {
+      width: 100%;
+      max-width: 760px;
+      height: 1050px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      background-color: #fafafa;
+    }
+    /* Footer */
+    footer {
+      margin-top: 60px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-gray);
+      text-align: center;
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      color: var(--muted);
     }
   </style>
 </head>
 <body>
 
-  <div class="top-bar">
-    <span>{{ site.institution }}</span>
-    <span>Edición Digital Nº 1 — 2026</span>
-    <span>Santiago de Chile</span>
+  <!-- Barra Superior -->
+  <div class="top-meta">
+    <span>Facultad de Derecho — Universidad de Chile</span>
+    <a href="#convocatoria-seccion" class="convocatoria-badge">📢 Convocatoria Abierta: Postula al Equipo</a>
+    <span>Edición Digital 2026</span>
   </div>
 
-  <header class="masthead">
-    <h1>{{ site.title }}</h1>
-    <div class="tagline">{{ site.tagline }}</div>
+  <!-- Cabecera Principal -->
+  <header class="header-main">
+    <h1>{{ site.title | default: "Eficiencia & Norma" }}</h1>
+    <div class="subtitle">Revista de Análisis Económico del Derecho, Mercados y Políticas Públicas</div>
   </header>
 
-  <hr class="divider-double">
+  <!-- Navegación por Secciones -->
+  <nav class="nav-bar">
+    <a href="{{ '/' | relative_url }}">Portada</a>
+    <a href="#seccion-competencia">Cárteles & Mercados</a>
+    <a href="#seccion-banca">Banca & Fisco</a>
+    <a href="#seccion-consumo">Consumo & Litigios</a>
+    <a href="#seccion-ambiental">Regulación Ambiental</a>
+    <a href="#seccion-coyuntura">Coyuntura & Políticas</a>
+    <a href="#convocatoria-seccion" style="color: var(--burgundy);">Postular</a>
+  </nav>
 
-  <main class="newspaper-grid">
-    <!-- Columna Izquierda: Artículo Principal / Lead -->
-    <section class="lead-post">
+  <!-- Bloque Superior: Portada Periodística -->
+  <main class="main-grid">
+    
+    <!-- Artículo Principal (Lead Story) -->
+    <section class="lead-story">
       {% if site.posts.size > 0 %}
         {% assign lead = site.posts.first %}
         <article>
-          <div class="meta">
-            <span class="category">{{ lead.category | default: "Editorial" }}</span> | 
-            <span>Por {{ lead.author }}</span> | 
-            <span>{{ lead.date | date: "%d de %B, %Y" }}</span>
-          </div>
+          <span class="lead-badge">{{ lead.category | default: "Artículo de Fondo" }}</span>
           <h2><a href="{{ lead.url | relative_url }}">{{ lead.title }}</a></h2>
-          <p style="font-size: 1.1rem; color: #222;">
-            {{ lead.excerpt | strip_html | truncatewords: 60 }}
+          <div class="lead-meta">
+            Por <strong>{{ lead.author }}</strong> | {{ lead.date | date: "%d/%m/%Y" }}
+          </div>
+          
+          <div class="takeaway-box">
+            <strong>En síntesis</strong>
+            Análisis sobre la aplicación del estándar de prueba y los efectos de las fallas de mercado en la jurisprudencia económica reciente.
+          </div>
+
+          <p style="font-size: 1.08rem; color: #222;">
+            {{ lead.excerpt | strip_html | truncatewords: 55 }}
           </p>
-          <p><a href="{{ lead.url | relative_url }}" style="font-family: var(--font-sans); font-weight: 600; font-size: 0.9rem;">Leer artículo completo →</a></p>
+          <p><a href="{{ lead.url | relative_url }}" style="font-family: var(--sans); font-weight: 700; color: var(--burgundy);">Continuar leyendo el análisis completo →</a></p>
         </article>
       {% else %}
         <p>No hay artículos publicados aún.</p>
       {% endif %}
     </section>
 
-    <!-- Columna Derecha: Columnas de Opinión / Artículos Secundarios -->
-    <aside class="sidebar-posts">
-      <h3 style="font-family: var(--font-sans); text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.05em; border-bottom: 2px solid var(--color-border); padding-bottom: 5px; margin-top: 0;">Otras Publicaciones</h3>
+    <!-- Barra Lateral: Breves y Columnas -->
+    <aside class="sidebar">
+      <h3>Columnas & Comentarios</h3>
       {% for post in site.posts offset:1 %}
-        <article class="side-post">
-          <div class="meta">
-            <span class="category">{{ post.category | default: "Doctrina" }}</span>
-          </div>
-          <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
-          <div class="meta">Por {{ post.author }}</div>
-          <p style="font-size: 0.92rem; color: #444;">{{ post.excerpt | strip_html | truncatewords: 20 }}</p>
+        <article class="side-card">
+          <span style="font-family: var(--sans); font-size: 0.72rem; font-weight: 800; color: var(--burgundy); text-transform: uppercase;">
+            {{ post.category | default: "Opinión" }}
+          </span>
+          <h4><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h4>
+          <p style="font-size: 0.88rem; color: #555; margin: 4px 0;">Por {{ post.author }}</p>
         </article>
       {% endfor %}
+
+      <!-- Cuadro Rápido a Convocatoria -->
+      <div style="background-color: var(--bg-card); border: 1px solid #e0e0e0; padding: 18px; border-radius: 4px; text-align: center; margin-top: 25px;">
+        <h4 style="margin: 0 0 8px; font-family: var(--sans); text-transform: uppercase; font-size: 0.88rem;">¿Quieres escribir en el diario?</h4>
+        <p style="font-size: 0.85rem; color: #555; margin-bottom: 14px;">Buscamos redactores y ayudantes para todas las áreas temáticas del derecho económico.</p>
+        <a href="#convocatoria-seccion" style="display: inline-block; background-color: var(--burgundy); color: #fff; text-decoration: none; font-family: var(--sans); font-weight: 700; font-size: 0.82rem; padding: 8px 16px; border-radius: 3px;">
+          Ir al Formulario
+        </a>
+      </div>
     </aside>
+
   </main>
 
+  <!-- SECCIÓN DESGLOSADA: LÍNEAS EDITORIALES -->
+  <section class="editorial-sections-block">
+    <div class="section-block-title">
+      <h3>Líneas Temáticas & Contenidos del Diario</h3>
+      <p>Áreas de investigación y publicación cubiertas por nuestro equipo editorial</p>
+    </div>
+
+    <div class="sections-grid">
+
+      <!-- 1. Cárteles & Mercados -->
+      <article class="theme-card" id="seccion-competencia">
+        <div class="scope">Libre Competencia & Regulación de Monopolios</div>
+        <h4>1. Cárteles & Mercados</h4>
+        <p>Estudio de los acuerdos colusorios, operaciones de concentración y el abuso de posición dominante, combinando dogmática jurídica y modelos microeconómicos.</p>
+        <ul>
+          <li>Requerimientos de la FNE y sentencias del TDLC y Corte Suprema.</li>
+          <li>Regulación de monopolios naturales (gas, electricidad, sanitarias).</li>
+          <li>Algoritmos de precios y riesgos coordinados en mercados digitales.</li>
+        </ul>
+      </article>
+
+      <!-- 2. Banca & Fisco -->
+      <article class="theme-card" id="seccion-banca">
+        <div class="scope">Regulación Financiera, Bancaria & Tributaria</div>
+        <h4>2. Banca & Fisco</h4>
+        <p>Análisis del mercado de capitales, la solvencia institucional y el diseño del sistema tributario como herramienta de financiamiento público y eficiencia.</p>
+        <ul>
+          <li>Normativas y fiscalización de la Comisión para el Mercado Financiero (CMF).</li>
+          <li>Crédito, tasa de interés máxima convencional y riesgo moral.</li>
+          <li>Norma General Antielusiva y reformas tributarias estructurales.</li>
+        </ul>
+      </article>
+
+      <!-- 3. Consumo & Litigios -->
+      <article class="theme-card" id="seccion-consumo">
+        <div class="scope">Derecho del Consumidor & Litigación Colectiva</div>
+        <h4>3. Consumo & Litigios</h4>
+        <p>Abordaje de las asimetrías de información, fallas de contratación y mecanismos de tutela de los derechos de los consumidores en la economía de plataformas.</p>
+        <ul>
+          <li>Acciones colectivas y acuerdos conciliatorios con el SERNAC.</li>
+          <li>Cláusulas abusivas en banca, seguros y comercio minorista.</li>
+          <li>Comercio electrónico, publicidad engañosa y protección de datos.</li>
+        </ul>
+      </article>
+
+      <!-- 4. Regulación Ambiental -->
+      <article class="theme-card" id="seccion-ambiental">
+        <div class="scope">Derecho Ambiental & Externalidades</div>
+        <h4>4. Regulación Ambiental</h4>
+        <p>Evaluación de los costos sociales de la actividad productiva, instrumentos de gestión ambiental y el estándar jurisprudencial de los Tribunales Ambientales.</p>
+        <ul>
+          <li>Sistema de Evaluación de Impacto Ambiental (SEIA) y permisos sectoriales.</li>
+          <li>Economía de las externalidades negativas y compensaciones ambientales.</li>
+          <li>Transición energética, descarbonización y regulación hídrica.</li>
+        </ul>
+      </article>
+
+      <!-- 5. Coyuntura & Políticas -->
+      <article class="theme-card" id="seccion-coyuntura">
+        <div class="scope">Microeconomía Aplicada & Debate Estudiantil</div>
+        <h4>5. Coyuntura & Políticas</h4>
+        <p>Espacio de debate ágil sobre proyectos de ley en trámite legislativo, políticas públicas y columnas de análisis crítico elaboradas por estudiantes y ayudantes.</p>
+        <ul>
+          <li>Seguimiento a proyectos de ley con impacto económico y regulatorio.</li>
+          <li>Debate teórico: fallas de mercado versus fallas del Estado.</li>
+          <li>Ensayos de opinión fundamentados sobre la contingencia nacional.</li>
+        </ul>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- SECCIÓN DE CONVOCATORIA CON GOOGLE FORM INCRUSTADO -->
+  <section class="form-wrapper" id="convocatoria-seccion">
+    <div class="form-header">
+      <h3>Convocatoria Oficial 2026</h3>
+      <p>
+        ¿Te apasiona el derecho económico, la libre competencia o la regulación de mercados? 
+        Completa el siguiente formulario oficial de postulación para unirte al equipo de redacción, 
+        columnistas o revisores de <strong>Eficiencia & Norma</strong>.
+      </p>
+      <p style="margin-top: 10px;">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSemT82GuGUG1TGBITMqvlMK-ASBM09jZC4p4QEif_Bolx-7mg/viewform" target="_blank" style="background-color: var(--burgundy); color: #fff; padding: 10px 20px; text-decoration: none; font-family: var(--sans); font-weight: 700; font-size: 0.88rem; border-radius: 4px; display: inline-block;">
+          Abrir Formulario en Pantalla Completa ↗
+        </a>
+      </p>
+    </div>
+
+    <!-- Formulario de Google Forms Incrustado -->
+    <div class="form-container">
+      <iframe src="[suspicious link removed]" frameborder="0" marginheight="0" marginwidth="0">
+        Cargando formulario de convocatoria…
+      </iframe>
+    </div>
+  </section>
+
+  <!-- Pie de Página -->
   <footer>
-    <p><strong>{{ site.title }}</strong> — Fundado y editado por el Equipo de Eficiencia & Norma </p>
-    <p>{{ site.institution }}</p>
+    <p><strong>Eficiencia & Norma</strong> — Dirección y Edición General: Victor Ignacio Huaiquian Rebolledo</p>
+    <p>Facultad de Derecho — Universidad de Chile</p>
   </footer>
 
 </body>
