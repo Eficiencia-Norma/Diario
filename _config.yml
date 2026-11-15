@@ -1,4 +1,9 @@
-title: "El Diario Estudiantil"
-description: "Periódico digital de noticias y análisis"
-baseurl: "/el-diario"
-url: "https://victorhr2.github.io"
+title: "Eficiencia & Norma"
+tagline: "Revista de Análisis Económico del Derecho y Regulación de Mercados"
+description: "Publicación académica estudiantil dedicada al estudio de la libre competencia, regulación de monopolios y políticas públicas."
+url: "https://tu-usuario.github.io"
+baseurl: "/el-diario" # Cámbialo por el nombre exacto de tu repositorio si es distinto
+
+# Datos editoriales
+institution: "Facultad de Derecho | Universidad de Chile"
+editor_in_chief: "Victor Ignacio Huaiquian Rebolledo"
