@@ -1,1 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title }} | {{ site.title }}</title>
+  <style>
+    body {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      font-family: "Merriweather", "Georgia", "Times New Roman", serif;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+      line-height: 1.8;
+      font-size: 1.1rem;
+    }
+    .back-link {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .back-link a {
+      color: #7b1113;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .header-post {
+      text-align: center;
+      margin: 40px 0 25px;
+    }
+    .category {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      color: #7b1113;
+      font-weight: 700;
+    }
+    h1 {
+      font-size: 2.5rem;
+      line-height: 1.2;
+      margin: 15px 0;
+      font-weight: 900;
+    }
+    .byline {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #666;
+      font-size: 0.95rem;
+      font-style: italic;
+    }
+    hr {
+      border: 0;
+      border-top: 1px solid #ddd;
+      margin: 30px 0;
+    }
+    .content p {
+      margin-bottom: 1.6em;
+      text-align: justify;
+    }
+    .content blockquote {
+      margin: 25px 0;
+      padding: 10px 25px;
+      border-left: 3px solid #7b1113;
+      background-color: #f7f7f5;
+      font-style: italic;
+    }
+    .content img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 25px auto;
+    }
+    footer {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid #ccc;
+      text-align: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
 
+  <div class="back-link">
+    <a href="{{ '/' | relative_url }}">← Volver a {{ site.title }}</a>
+  </div>
+
+  <header class="header-post">
+    <div class="category">{{ page.category | default: "Artículo de Fondo" }}</div>
+    <h1>{{ page.title }}</h1>
+    <div class="byline">
+      Por <strong>{{ page.author }}</strong><br>
+      Publicado el {{ page.date | date: "%d de %B de %Y" }}
+    </div>
+  </header>
+
+  <hr>
+
+  <main class="content">
+    {{ content }}
+  </main>
+
+  <footer>
+    <p><strong>{{ site.title }}</strong> | {{ site.institution }}</p>
+    <p><a href="{{ '/' | relative_url }}">Volver a la portada principal</a></p>
+  </footer>
+
+</body>
+</html>
