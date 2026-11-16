@@ -1,0 +1,27 @@
+backend:
+  name: github
+  repo: victorhr2/eficiencia-Norma # Pon tu usuario y nombre de repo
+  branch: main
+
+media_folder: "assets/img"
+public_folder: "/assets/img"
+
+collections:
+  - name: "articulos"
+    label: "Artículos"
+    folder: "_posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Diseño", name: "layout", widget: "hidden", default: "post" }
+      - { label: "Título", name: "title", widget: "string" }
+      - { label: "Autor", name: "author", widget: "string" }
+      - { label: "Fecha", name: "date", widget: "datetime", format: "YYYY-MM-DD" }
+      - { 
+          label: "Sección", 
+          name: "category", 
+          widget: "select", 
+          options: ["Cárteles & Mercados", "Banca & Fisco", "Consumo & Litigios", "Regulación Ambiental", "Coyuntura & Políticas"] 
+        }
+      - { label: "Foto Destacada", name: "image", widget: "image", required: false }
+      - { label: "Cuerpo", name: "body", widget: "markdown" }
