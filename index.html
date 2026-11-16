@@ -4,285 +4,441 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <title>{{ site.title | default: "Eficiencia & Norma" }} | Revista de Análisis Económico del Derecho</title>
   <style>
+    /* VARIABLES DE DISEÑO & PALETA ACADÉMICA */
     :root {
       --serif: "Merriweather", "Georgia", "Times New Roman", serif;
-      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       --burgundy: #7b1113;
+      --burgundy-hover: #9c1518;
       --ink: #111111;
-      --muted: #555555;
-      --border-gray: #e2e2e2;
+      --ink-light: #222222;
+      --muted: #5a5a5a;
+      --border-gray: #e2e2df;
       --bg-cream: #fdfdfc;
       --bg-card: #f8f8f6;
+      --shadow-subtle: 0 4px 14px rgba(0, 0, 0, 0.05);
+      --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.09);
+      --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
+    /* RESETEO UNIVERSAL ANTI-BUGS & SCROLL */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
     body {
-      max-width: 1120px;
+      width: 100%;
+      max-width: 1140px;
       margin: 0 auto;
-      padding: 20px 24px 60px;
+      padding: 16px 18px 60px;
       font-family: var(--serif);
       color: var(--ink);
       background-color: var(--bg-cream);
       line-height: 1.65;
+      overflow-x: hidden; /* Elimina cualquier desplazamiento horizontal no deseado */
     }
-    /* Barra Superior */
+
+    /* 1. BARRA SUPERIOR (TOP META) */
     .top-meta {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
       font-family: var(--sans);
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       border-bottom: 1px solid var(--border-gray);
       padding-bottom: 8px;
       color: var(--muted);
     }
+
     .convocatoria-badge {
       background-color: var(--burgundy);
-      color: #fff !important;
-      padding: 5px 12px;
-      border-radius: 3px;
+      color: #ffffff !important;
+      padding: 6px 14px;
+      border-radius: 4px;
       text-decoration: none;
       font-weight: 700;
+      letter-spacing: 0.02em;
+      transition: var(--transition);
+      display: inline-block;
     }
-    /* Cabecera / Masthead */
+
+    .convocatoria-badge:hover {
+      background-color: var(--burgundy-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(123, 17, 19, 0.25);
+    }
+
+    /* 2. CABECERA EDITORIAL (MASTHEAD) */
     .header-main {
       text-align: center;
-      padding: 30px 0 16px;
+      padding: 24px 0 16px;
     }
+
     .header-main h1 {
-      font-size: 3.6rem;
+      font-size: clamp(2.1rem, 6vw, 3.8rem); /* Escala fluida según el ancho del dispositivo */
       font-weight: 900;
       letter-spacing: -0.025em;
-      margin: 0;
       text-transform: uppercase;
-      line-height: 1;
+      line-height: 1.05;
+      color: var(--ink);
     }
+
     .header-main .subtitle {
       font-style: italic;
-      font-size: 1.15rem;
-      color: #333;
+      font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+      color: var(--muted);
       margin-top: 10px;
+      line-height: 1.4;
     }
-    /* Navegación por Secciones */
+
+    /* 3. NAVEGACIÓN PRINCIPAL ADAPTABLE */
+    .nav-bar-container {
+      width: 100%;
+      border-top: 3px double #222;
+      border-bottom: 1px solid #222;
+      margin: 18px 0 32px;
+      overflow-x: auto; /* Permite deslizar horizontalmente en teléfonos sin descuadrar */
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .nav-bar-container::-webkit-scrollbar {
+      display: none;
+    }
+
     .nav-bar {
       display: flex;
       justify-content: center;
-      flex-wrap: wrap;
-      gap: 20px;
-      border-top: 3px double #222;
-      border-bottom: 1px solid #222;
-      padding: 10px 0;
-      margin: 18px 0 32px;
+      align-items: center;
+      gap: 18px;
+      padding: 10px 4px;
       font-family: var(--sans);
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
     }
+
+    @media (max-width: 768px) {
+      .nav-bar {
+        justify-content: flex-start; /* En móvil permite deslizar con el pulgar */
+        gap: 16px;
+      }
+    }
+
     .nav-bar a {
       color: var(--ink);
       text-decoration: none;
+      padding: 4px 6px;
+      border-radius: 3px;
+      transition: var(--transition);
     }
+
     .nav-bar a:hover {
       color: var(--burgundy);
+      background-color: rgba(123, 17, 19, 0.05);
     }
-    /* Grilla Principal de Noticias */
+
+    /* 4. GRILLA PRINCIPAL */
     .main-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
-      gap: 40px;
-      margin-bottom: 50px;
+      gap: 36px;
+      margin-bottom: 45px;
     }
-    @media (max-width: 840px) {
-      .main-grid { grid-template-columns: 1fr; }
-      .header-main h1 { font-size: 2.4rem; }
+
+    @media (max-width: 860px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
     }
-    /* Noticia Principal (Lead Story) */
+
+    /* ARTÍCULO DE PORTADA (LEAD) */
     .lead-story {
       border-right: 1px solid var(--border-gray);
-      padding-right: 36px;
+      padding-right: 32px;
     }
-    @media (max-width: 840px) {
-      .lead-story { border-right: none; padding-right: 0; }
+
+    @media (max-width: 860px) {
+      .lead-story {
+        border-right: none;
+        padding-right: 0;
+      }
     }
+
     .lead-badge {
       display: inline-block;
       font-family: var(--sans);
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 800;
       text-transform: uppercase;
+      letter-spacing: 0.05em;
       color: var(--burgundy);
       margin-bottom: 8px;
     }
+
     .lead-story h2 {
-      font-size: 2.2rem;
+      font-size: clamp(1.6rem, 3.5vw, 2.3rem);
       line-height: 1.22;
-      margin: 0 0 12px;
+      margin-bottom: 12px;
     }
+
     .lead-story a, .side-card a {
       color: var(--ink);
       text-decoration: none;
+      transition: var(--transition);
     }
+
     .lead-story a:hover, .side-card a:hover {
-      text-decoration: underline;
+      color: var(--burgundy);
     }
+
     .lead-meta {
       font-family: var(--sans);
       font-size: 0.85rem;
       color: var(--muted);
       margin-bottom: 16px;
     }
+
     .takeaway-box {
       background-color: var(--bg-card);
       border-left: 4px solid var(--burgundy);
       padding: 14px 18px;
-      margin: 20px 0;
+      margin: 18px 0;
       font-family: var(--sans);
       font-size: 0.92rem;
+      border-radius: 0 4px 4px 0;
     }
+
     .takeaway-box strong {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       text-transform: uppercase;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       letter-spacing: 0.05em;
       color: var(--burgundy);
     }
-    /* Sidebar */
+
+    .read-more-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--sans);
+      font-weight: 700;
+      color: var(--burgundy) !important;
+      text-decoration: none;
+      margin-top: 10px;
+      transition: var(--transition);
+    }
+
+    .read-more-link:hover {
+      transform: translateX(4px);
+    }
+
+    /* BARRA LATERAL (SIDEBAR) */
     .sidebar h3 {
       font-family: var(--sans);
       text-transform: uppercase;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       letter-spacing: 0.08em;
       border-bottom: 2px solid #222;
       padding-bottom: 6px;
       margin-top: 0;
     }
+
     .side-card {
-      margin-bottom: 22px;
+      margin-bottom: 20px;
       padding-bottom: 16px;
       border-bottom: 1px solid var(--border-gray);
+      transition: var(--transition);
     }
+
+    .side-card:hover {
+      transform: translateY(-2px);
+    }
+
     .side-card h4 {
-      font-size: 1.15rem;
+      font-size: 1.12rem;
       margin: 6px 0;
       line-height: 1.35;
     }
-    /* SECCIONES EDITORIALES DESGLOSADAS */
+
+    .side-cta-box {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-gray);
+      border-top: 3px solid var(--burgundy);
+      padding: 20px;
+      border-radius: 4px;
+      text-align: center;
+      margin-top: 24px;
+    }
+
+    .side-cta-box h4 {
+      font-family: var(--sans);
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+    }
+
+    .side-cta-box p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    /* 5. SECCIÓN DESGLOSADA: LÍNEAS TEMÁTICAS */
     .editorial-sections-block {
       border-top: 2px solid #222;
       padding-top: 36px;
-      margin-top: 40px;
+      margin-top: 30px;
     }
+
     .section-block-title {
       text-align: center;
       margin-bottom: 30px;
     }
+
     .section-block-title h3 {
-      font-size: 1.9rem;
-      margin: 0 0 6px;
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      margin-bottom: 6px;
       text-transform: uppercase;
-      letter-spacing: -0.01em;
     }
+
     .section-block-title p {
       font-family: var(--sans);
       font-size: 0.92rem;
       color: var(--muted);
-      margin: 0;
     }
+
     .sections-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px;
-      margin-bottom: 50px;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 22px;
+      margin-bottom: 45px;
     }
+
     .theme-card {
       background-color: var(--bg-card);
-      border: 1px solid #e7e7e4;
+      border: 1px solid var(--border-gray);
       border-top: 4px solid var(--burgundy);
       padding: 22px 20px;
       border-radius: 4px;
+      transition: var(--transition);
+      box-shadow: var(--shadow-subtle);
     }
-    .theme-card h4 {
-      margin: 0 0 10px;
-      font-size: 1.25rem;
-      line-height: 1.3;
-      color: var(--ink);
+
+    .theme-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+      border-color: #d0d0cc;
     }
+
     .theme-card .scope {
       font-family: var(--sans);
-      font-size: 0.82rem;
-      font-weight: 700;
+      font-size: 0.75rem;
+      font-weight: 800;
       color: var(--burgundy);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
+
+    .theme-card h4 {
+      margin-bottom: 10px;
+      font-size: 1.22rem;
+      line-height: 1.3;
+    }
+
     .theme-card p {
-      font-size: 0.95rem;
+      font-size: 0.94rem;
       color: #333;
-      margin: 0 0 12px;
+      margin-bottom: 12px;
       line-height: 1.55;
     }
+
     .theme-card ul {
-      margin: 0;
       padding-left: 18px;
       font-family: var(--sans);
       font-size: 0.85rem;
       color: #444;
       line-height: 1.5;
     }
-    /* BLOQUE DE CONVOCATORIA Y GOOGLE FORM */
+
+    /* 6. FORMULARIO RESPONSIVO (ANTI-DESBORDE) */
     .form-wrapper {
       background-color: #ffffff;
-      border: 1px solid #dfdfdc;
+      border: 1px solid var(--border-gray);
       border-top: 5px solid var(--burgundy);
-      padding: 40px 24px;
+      padding: clamp(20px, 4vw, 40px) clamp(14px, 3vw, 24px);
       border-radius: 6px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.04);
-      margin-top: 50px;
+      box-shadow: var(--shadow-subtle);
+      margin-top: 40px;
+      width: 100%;
     }
+
     .form-header {
       text-align: center;
-      max-width: 780px;
-      margin: 0 auto 30px;
+      max-width: 760px;
+      margin: 0 auto 24px;
     }
+
     .form-header h3 {
-      font-size: 2.1rem;
-      margin: 0 0 10px;
+      font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+      margin-bottom: 10px;
       text-transform: uppercase;
       color: var(--burgundy);
     }
+
     .form-header p {
       font-family: var(--sans);
-      font-size: 0.98rem;
+      font-size: 0.95rem;
       color: #444;
       line-height: 1.6;
     }
+
     .form-container {
-      display: flex;
-      justify-content: center;
-    }
-    iframe {
+      position: relative;
       width: 100%;
       max-width: 760px;
-      height: 1050px;
-      border: 1px solid #e0e0e0;
+      margin: 0 auto;
+      overflow: hidden;
       border-radius: 6px;
+      border: 1px solid var(--border-gray);
       background-color: #fafafa;
     }
-    /* Footer */
+
+    .form-container iframe {
+      width: 100%;
+      height: 980px;
+      border: none;
+      display: block;
+    }
+
+    /* FOOTER */
     footer {
       margin-top: 60px;
       padding-top: 24px;
       border-top: 1px solid var(--border-gray);
       text-align: center;
       font-family: var(--sans);
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       color: var(--muted);
+      line-height: 1.6;
     }
   </style>
 </head>
@@ -301,18 +457,20 @@
     <div class="subtitle">Revista de Análisis Económico del Derecho, Mercados y Políticas Públicas</div>
   </header>
 
-  <!-- Navegación por Secciones -->
-  <nav class="nav-bar">
-    <a href="{{ '/' | relative_url }}">Portada</a>
-    <a href="#seccion-competencia">Cárteles & Mercados</a>
-    <a href="#seccion-banca">Banca & Fisco</a>
-    <a href="#seccion-consumo">Consumo & Litigios</a>
-    <a href="#seccion-ambiental">Regulación Ambiental</a>
-    <a href="#seccion-coyuntura">Coyuntura & Políticas</a>
-    <a href="#convocatoria-seccion" style="color: var(--burgundy);">Postular</a>
-  </nav>
+  <!-- Navegación Responsiva con Scroll Táctil -->
+  <div class="nav-bar-container">
+    <nav class="nav-bar">
+      <a href="{{ '/' | relative_url }}">Portada</a>
+      <a href="#seccion-competencia">Cárteles & Mercados</a>
+      <a href="#seccion-banca">Banca & Fisco</a>
+      <a href="#seccion-consumo">Consumo & Litigios</a>
+      <a href="#seccion-ambiental">Regulación Ambiental</a>
+      <a href="#seccion-coyuntura">Coyuntura & Políticas</a>
+      <a href="#convocatoria-seccion" style="color: var(--burgundy);">Postular</a>
+    </nav>
+  </div>
 
-  <!-- Bloque Superior: Portada Periodística -->
+  <!-- Bloque Principal de Noticias -->
   <main class="main-grid">
     
     <!-- Artículo Principal (Lead Story) -->
@@ -331,17 +489,17 @@
             Análisis sobre la aplicación del estándar de prueba y los efectos de las fallas de mercado en la jurisprudencia económica reciente.
           </div>
 
-          <p style="font-size: 1.08rem; color: #222;">
-            {{ lead.excerpt | strip_html | truncatewords: 55 }}
+          <p style="font-size: 1.05rem; color: #222;">
+            {{ lead.excerpt | strip_html | truncatewords: 50 }}
           </p>
-          <p><a href="{{ lead.url | relative_url }}" style="font-family: var(--sans); font-weight: 700; color: var(--burgundy);">Continuar leyendo el análisis completo →</a></p>
+          <p><a href="{{ lead.url | relative_url }}" class="read-more-link">Continuar leyendo el análisis completo →</a></p>
         </article>
       {% else %}
         <p>No hay artículos publicados aún.</p>
       {% endif %}
     </section>
 
-    <!-- Barra Lateral: Breves y Columnas -->
+    <!-- Barra Lateral -->
     <aside class="sidebar">
       <h3>Columnas & Comentarios</h3>
       {% for post in site.posts offset:1 %}
@@ -354,11 +512,10 @@
         </article>
       {% endfor %}
 
-      <!-- Cuadro Rápido a Convocatoria -->
-      <div style="background-color: var(--bg-card); border: 1px solid #e0e0e0; padding: 18px; border-radius: 4px; text-align: center; margin-top: 25px;">
-        <h4 style="margin: 0 0 8px; font-family: var(--sans); text-transform: uppercase; font-size: 0.88rem;">¿Quieres escribir en el diario?</h4>
-        <p style="font-size: 0.85rem; color: #555; margin-bottom: 14px;">Buscamos redactores y ayudantes para todas las áreas temáticas del derecho económico.</p>
-        <a href="#convocatoria-seccion" style="display: inline-block; background-color: var(--burgundy); color: #fff; text-decoration: none; font-family: var(--sans); font-weight: 700; font-size: 0.82rem; padding: 8px 16px; border-radius: 3px;">
+      <div class="side-cta-box">
+        <h4>¿Quieres escribir en el diario?</h4>
+        <p>Buscamos redactores y colaboradores para todas las áreas temáticas del derecho económico.</p>
+        <a href="#convocatoria-seccion" class="convocatoria-badge">
           Ir al Formulario
         </a>
       </div>
@@ -366,10 +523,10 @@
 
   </main>
 
-  <!-- SECCIÓN DESGLOSADA: LÍNEAS EDITORIALES -->
+  <!-- SECCIÓN DESGLOSADA: LÍNEAS TEMÁTICAS -->
   <section class="editorial-sections-block">
     <div class="section-block-title">
-      <h3>Líneas Temáticas & Contenidos del Diario</h3>
+      <h3>Líneas Temáticas & Contenidos</h3>
       <p>Áreas de investigación y publicación cubiertas por nuestro equipo editorial</p>
     </div>
 
@@ -379,7 +536,7 @@
       <article class="theme-card" id="seccion-competencia">
         <div class="scope">Libre Competencia & Regulación de Monopolios</div>
         <h4>1. Cárteles & Mercados</h4>
-        <p>Estudio de los acuerdos colusorios, operaciones de concentración y el abuso de posición dominante, combinando dogmática jurídica y modelos microeconómicos.</p>
+        <p>Estudio de acuerdos colusorios, operaciones de concentración y abuso de posición dominante, combinando dogmática jurídica y modelos microeconómicos.</p>
         <ul>
           <li>Requerimientos de la FNE y sentencias del TDLC y Corte Suprema.</li>
           <li>Regulación de monopolios naturales (gas, electricidad, sanitarias).</li>
@@ -391,7 +548,7 @@
       <article class="theme-card" id="seccion-banca">
         <div class="scope">Regulación Financiera, Bancaria & Tributaria</div>
         <h4>2. Banca & Fisco</h4>
-        <p>Análisis del mercado de capitales, la solvencia institucional y el diseño del sistema tributario como herramienta de financiamiento público y eficiencia.</p>
+        <p>Análisis del mercado de capitales, solvencia institucional y el diseño del sistema tributario como herramienta de financiamiento público y equidad.</p>
         <ul>
           <li>Normativas y fiscalización de la Comisión para el Mercado Financiero (CMF).</li>
           <li>Crédito, tasa de interés máxima convencional y riesgo moral.</li>
@@ -403,10 +560,10 @@
       <article class="theme-card" id="seccion-consumo">
         <div class="scope">Derecho del Consumidor & Litigación Colectiva</div>
         <h4>3. Consumo & Litigios</h4>
-        <p>Abordaje de las asimetrías de información, fallas de contratación y mecanismos de tutela de los derechos de los consumidores en la economía de plataformas.</p>
+        <p>Abordaje de asimetrías de información, fallas de contratación y mecanismos de tutela de los derechos de los consumidores en la economía digital.</p>
         <ul>
           <li>Acciones colectivas y acuerdos conciliatorios con el SERNAC.</li>
-          <li>Cláusulas abusivas en banca, seguros y comercio minorista.</li>
+          <li>Cláusulas abusivas en banca, seguros y retail.</li>
           <li>Comercio electrónico, publicidad engañosa y protección de datos.</li>
         </ul>
       </article>
@@ -415,7 +572,7 @@
       <article class="theme-card" id="seccion-ambiental">
         <div class="scope">Derecho Ambiental & Externalidades</div>
         <h4>4. Regulación Ambiental</h4>
-        <p>Evaluación de los costos sociales de la actividad productiva, instrumentos de gestión ambiental y el estándar jurisprudencial de los Tribunales Ambientales.</p>
+        <p>Evaluación de los costos sociales de la actividad productiva, instrumentos de gestión ambiental y el estándar jurisprudencial de Tribunales Ambientales.</p>
         <ul>
           <li>Sistema de Evaluación de Impacto Ambiental (SEIA) y permisos sectoriales.</li>
           <li>Economía de las externalidades negativas y compensaciones ambientales.</li>
@@ -438,26 +595,26 @@
     </div>
   </section>
 
-  <!-- SECCIÓN DE CONVOCATORIA CON GOOGLE FORM INCRUSTADO -->
+  <!-- SECCIÓN DE CONVOCATORIA (GOOGLE FORM RESPONSIVO) -->
   <section class="form-wrapper" id="convocatoria-seccion">
     <div class="form-header">
       <h3>Convocatoria Oficial 2026</h3>
       <p>
         ¿Te apasiona el derecho económico, la libre competencia o la regulación de mercados? 
-        Completa el siguiente formulario oficial de postulación para unirte al equipo de redacción, 
+        Completa el formulario oficial de postulación para unirte al equipo de redacción, 
         columnistas o revisores de <strong>Eficiencia & Norma</strong>.
       </p>
-      <p style="margin-top: 10px;">
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSemT82GuGUG1TGBITMqvlMK-ASBM09jZC4p4QEif_Bolx-7mg/viewform" target="_blank" style="background-color: var(--burgundy); color: #fff; padding: 10px 20px; text-decoration: none; font-family: var(--sans); font-weight: 700; font-size: 0.88rem; border-radius: 4px; display: inline-block;">
+      <p style="margin-top: 14px;">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSemT82GuGUG1TGBITMqvlMK-ASBM09jZC4p4QEif_Bolx-7mg/viewform" target="_blank" class="convocatoria-badge">
           Abrir Formulario en Pantalla Completa ↗
         </a>
       </p>
     </div>
 
-    <!-- Formulario de Google Forms Incrustado -->
+    <!-- Iframe con Contenedor Elástico Anti-Bugs -->
     <div class="form-container">
-      <iframe src="[suspicious link removed]" frameborder="0" marginheight="0" marginwidth="0">
-        Cargando formulario de convocatoria…
+      <iframe src="[suspicious link removed]" loading="lazy">
+        Cargando formulario de postulación…
       </iframe>
     </div>
   </section>
