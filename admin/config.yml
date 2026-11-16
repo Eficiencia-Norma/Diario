@@ -1,7 +1,7 @@
 backend:
   name: github
-  repo: victorhr2/eficiencia-Norma # Pon tu usuario y nombre de repo
-  branch: main
+  repo: victorhr2/Eficiencia-Norma-
+  branch: main # o master si tu rama se llama master
 
 media_folder: "assets/img"
 public_folder: "/assets/img"
