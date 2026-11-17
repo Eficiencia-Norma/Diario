@@ -1,0 +1,76 @@
+name: Publicar Documentos Automáticamente
+
+on:
+  push:
+    paths:
+      - '_borradores/**.docx'
+  workflow_dispatch:
+
+jobs:
+  convertir_doc:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar convertidor Pandoc
+        run: sudo apt-get update && sudo apt-get install -y pandoc
+
+      - name: Procesar archivos Docx
+        run: |
+          mkdir -p assets/img
+          mkdir -p _posts
+          
+          for file in _borradores/*.docx; do
+            [ -f "$file" ] || continue
+            
+            # Nombre base y fecha
+            base_name=$(basename "$file" .docx | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+            today=$(date +%Y-%m-%d)
+            output_post="_posts/${today}-${base_name}.md"
+            img_dir="assets/img/${base_name}"
+            
+            mkdir -p "$img_dir"
+            
+            # Extraer imágenes del docx y convertir a texto
+            pandoc "$file" -f docx -t markdown --extract-media="." -o temp.md
+            
+            # Mover imágenes extraídas a la carpeta de assets
+            if [ -d "media" ]; then
+              mv media/* "$img_dir/" 2>/dev/null || true
+              rm -rf media
+              # Ajustar rutas de las imágenes en el texto
+              sed -i "s|media/|/assets/img/${base_name}/|g" temp.md
+            fi
+            
+            # Título limpio a partir del nombre del archivo
+            clean_title=$(basename "$file" .docx | tr '-' ' ' | tr '_' ' ')
+            
+            # Crear cabecera con el diseño del diario
+            cat <<EOF > "$output_post"
+          ---
+          layout: post
+          title: "${clean_title}"
+          author: "Equipo Editorial"
+          date: ${today}
+          category: "Coyuntura & Políticas"
+          ---
+
+          EOF
+            cat temp.md >> "$output_post"
+            rm -f temp.md
+            
+            # Eliminar el borrador para no reprocesarlo
+            rm -f "$file"
+          done
+
+      - name: Publicar cambios en la web
+        run: |
+          git config --global user.name "Bot Eficiencia & Norma"
+          git config --global user.email "bot@eficiencia-norma.cl"
+          git add _posts/ assets/img/ _borradores/
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto: Publicación de nuevo artículo desde Docs"
+          git push
