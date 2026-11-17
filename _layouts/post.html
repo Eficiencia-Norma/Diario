@@ -1,214 +1,123 @@
----
-layout: default
----
+/* ESTILOS EDITORIALES THE ECONOMIST */
 
-<!-- Barra de progreso de lectura superior -->
-<div id="reading-progress" style="position: fixed; top: 0; left: 0; height: 4px; background: #7b1113; width: 0%; z-index: 9999; transition: width 0.1s ease-out;"></div>
+/* 1. Copete introductorio (Standfirst) */
+.editorial-standfirst {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+  line-height: 1.5;
+  color: #333333;
+  font-style: italic;
+  margin-bottom: 28px;
+  border-left: 3px solid #7b1113;
+  padding-left: 18px;
+}
 
-<article class="article-container">
-  <header class="article-header">
-    <div class="article-meta-top">
-      <span class="category-badge">{{ page.category | default: "Actualidad & Regulación" }}</span>
-      <span class="date-text">📅 {{ page.date | date: "%d de %B de %Y" }}</span>
-    </div>
-    <h1 class="article-title">{{ page.title }}</h1>
-    <div class="article-byline">
-      <div class="author-avatar">✍️</div>
-      <div class="author-info">
-        <span class="author-name">{{ page.author | default: "Equipo Editorial" }}</span>
-        <span class="reading-time">Diario Eficiencia & Norma · Lectura en profundidad</span>
-      </div>
-    </div>
-  </header>
+/* 2. Letra Capital Clásica (Drop Cap) */
+.drop-cap {
+  float: left;
+  font-family: Georgia, serif;
+  font-size: 4.4rem;
+  line-height: 0.8;
+  padding-top: 6px;
+  padding-right: 12px;
+  padding-bottom: 2px;
+  color: #7b1113;
+  font-weight: 800;
+}
 
-  <div class="article-body">
-    {{ content }}
-  </div>
+/* 3. Citas de revista destacadas (Pull Quotes) */
+.pull-quote {
+  margin: 36px 0;
+  padding: 24px 30px;
+  background-color: #fcf9f9;
+  border-top: 2px solid #7b1113;
+  border-bottom: 2px solid #7b1113;
+  text-align: center;
+}
 
-  <footer class="article-footer">
-    <a href="{{ site.baseurl }}/" class="back-button">
-      <span class="arrow">←</span> Volver a la portada principal
-    </a>
-  </footer>
-</article>
+.pull-quote blockquote {
+  font-family: Georgia, serif;
+  font-size: 1.45rem;
+  line-height: 1.45;
+  color: #111;
+  font-weight: 600;
+  font-style: italic;
+  margin-bottom: 8px;
+}
 
-<style>
-  /* Animación suave de entrada */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+.pull-quote figcaption {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #7b1113;
+}
 
-  .article-container {
-    max-width: 780px;
-    margin: 32px auto 60px;
-    padding: 0 20px;
-    animation: fadeIn 0.4s ease-out;
-  }
+/* 4. Subtítulos con acento editorial */
+.editorial-h2 {
+  font-family: Georgia, serif;
+  font-size: 1.65rem;
+  color: #111;
+  margin-top: 40px;
+  margin-bottom: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-  .article-header {
-    border-bottom: 2px solid #eaeaea;
-    padding-bottom: 24px;
-    margin-bottom: 32px;
-  }
+.h2-accent {
+  display: inline-block;
+  width: 6px;
+  height: 22px;
+  background-color: #7b1113;
+  border-radius: 2px;
+}
 
-  .article-meta-top {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 14px;
-    flex-wrap: wrap;
-  }
+/* 5. Tablas responsivas */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  margin: 30px 0;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
 
-  .category-badge {
-    background-color: #7b1113;
-    color: #ffffff;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 4px 10px;
-    border-radius: 4px;
-  }
+.table-responsive table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
 
-  .date-text {
-    font-size: 0.85rem;
-    color: #666;
-  }
+.table-responsive th {
+  background-color: #7b1113;
+  color: #ffffff;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 700;
+}
 
-  .article-title {
-    font-size: 2.3rem;
-    line-height: 1.25;
-    color: #111111;
-    font-weight: 800;
-    margin: 0 0 20px 0;
-    letter-spacing: -0.02em;
-  }
+.table-responsive td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
 
-  .article-byline {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+.table-responsive tr:nth-child(even) {
+  background-color: #fbfbfb;
+}
 
-  .author-avatar {
-    width: 38px;
-    height: 38px;
-    background: #f0f2f5;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-  }
+/* 6. Caja de descarga de documentos */
+.download-box {
+  background: #fdf8f8;
+  border: 1px solid rgba(123, 17, 19, 0.25);
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-size: 0.95rem;
+  margin-top: 30px;
+}
 
-  .author-info {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .author-name {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #222;
-  }
-
-  .reading-time {
-    font-size: 0.8rem;
-    color: #777;
-  }
-
-  /* Cuerpo del artículo con alta legibilidad */
-  .article-body {
-    font-size: 1.15rem;
-    line-height: 1.8;
-    color: #2c3e50;
-    word-break: break-word;
-  }
-
-  .article-body p {
-    margin-bottom: 1.4em;
-  }
-
-  .article-body h2, .article-body h3 {
-    color: #7b1113;
-    margin-top: 1.8em;
-    margin-bottom: 0.6em;
-    font-weight: 700;
-  }
-
-  .article-body img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin: 24px auto;
-    display: block;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    transition: transform 0.3s ease;
-  }
-
-  .article-body img:hover {
-    transform: scale(1.01);
-  }
-
-  .article-body blockquote {
-    border-left: 4px solid #7b1113;
-    background: #fbfbfb;
-    padding: 16px 20px;
-    margin: 24px 0;
-    font-style: italic;
-    color: #555;
-    border-radius: 0 6px 6px 0;
-  }
-
-  .article-footer {
-    margin-top: 50px;
-    padding-top: 24px;
-    border-top: 1px solid #eaeaea;
-  }
-
-  .back-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background-color: #f5f6f8;
-    color: #7b1113;
-    font-weight: 700;
-    text-decoration: none;
-    padding: 10px 18px;
-    border-radius: 6px;
-    transition: all 0.25s ease;
-  }
-
-  .back-button:hover {
-    background-color: #7b1113;
-    color: #ffffff;
-    transform: translateX(-4px);
-  }
-
-  /* Adaptación a teléfonos móviles */
-  @media (max-width: 600px) {
-    .article-container {
-      margin-top: 20px;
-      padding: 0 16px;
-    }
-    .article-title {
-      font-size: 1.75rem;
-    }
-    .article-body {
-      font-size: 1.05rem;
-      line-height: 1.7;
-    }
-  }
-</style>
-
-<script>
-  // Barra de progreso de lectura en scroll
-  window.addEventListener('scroll', () => {
-    const docEl = document.documentElement;
-    const scrollTop = docEl.scrollTop || document.body.scrollTop;
-    const scrollHeight = docEl.scrollHeight - docEl.clientHeight;
-    const progress = (scrollTop / scrollHeight) * 100;
-    document.getElementById('reading-progress').style.width = progress + '%';
-  });
-</script>
+.download-box a {
+  color: #7b1113;
+  font-weight: 700;
+  text-decoration: underline;
+}
