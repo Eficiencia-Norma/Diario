@@ -1,186 +1,167 @@
----
+--
 layout: default
 ---
 
-<div class="newspaper-wrapper">
+<div class="edition-wrapper">
 
-  <!-- CABECERA INSTITUCIONAL EDITORIAL -->
+  <!-- CABECERA PRINCIPAL (MASTHEAD) -->
   <header class="masthead">
-    <div class="masthead-top">
-      <span class="masthead-date" id="current-date">Edición Digital</span>
-      <span class="masthead-tagline">Libre Competencia · Regulación Económica · Políticas Públicas</span>
+    <div class="masthead-meta">
+      <span class="meta-date" id="live-date">Edición Digital</span>
+      <span class="meta-edition">DIARIO DE REGULACIÓN, MERCADOS Y DERECHO ECONÓMICO</span>
+      <span class="meta-country">CHILE</span>
     </div>
-    <div class="masthead-main">
-      <h1 class="newspaper-title">EFICIENCIA & NORMA</h1>
-      <p class="newspaper-subtitle">Análisis riguroso de mercados, sentencias y regulación económica</p>
+
+    <div class="masthead-branding">
+      <h1 class="brand-name">EFICIENCIA &amp; NORMA</h1>
+      <p class="brand-baseline">Análisis de sentencias, libre competencia y políticas públicas</p>
     </div>
-    <nav class="editorial-nav">
-      <span class="nav-item">Cárteles & Mercados</span>
-      <span class="nav-item">Banca & Fisco</span>
-      <span class="nav-item">Consumo & Litigios</span>
-      <span class="nav-item">Regulación Ambiental</span>
-      <a href="#convocatoria-seccion" class="nav-item nav-highlight">Convocatoria 2026</a>
+
+    <nav class="masthead-nav">
+      <a href="#actualidad" class="nav-link">Libre Competencia</a>
+      <a href="#regulacion" class="nav-link">Mercados Regulados</a>
+      <a href="#jurisprudencia" class="nav-link">Sentencias TDLC</a>
+      <a href="#equipo-editorial" class="nav-link">Comité Editorial</a>
+      <a href="#convocatoria-seccion" class="nav-link nav-link-special">Convocatoria</a>
     </nav>
   </header>
 
-  <!-- CONTENIDO EDITORIAL PRINCIPAL -->
-  <main class="news-container">
+  <!-- CONTENIDO PRINCIPAL DE PORTADA -->
+  <main class="content-body">
     {% if site.posts.size > 0 %}
       
-      <!-- ARTÍCULO PRINCIPAL / DESTACADO -->
+      <!-- ARTÍCULO PRINCIPAL (LEAD STORY) -->
       {% assign lead_post = site.posts.first %}
-      <article class="featured-card">
-        <a href="{{ lead_post.url | relative_url }}" class="featured-link">
-          <div class="featured-grid">
-            <div class="featured-media">
+      <section class="lead-story">
+        <a href="{{ lead_post.url | relative_url }}" class="lead-link">
+          <div class="lead-grid">
+            <div class="lead-text">
+              <span class="rubric">{{ lead_post.category | default: "ANÁLISIS DE MERCADOS" | upcase }}</span>
+              <h2 class="lead-title">{{ lead_post.title }}</h2>
+              <p class="lead-standfirst">
+                {{ lead_post.excerpt | strip_html | truncatewords: 34 | default: "Revisión técnica de los principales antecedentes regulatorios, fundamentos económicos y alcance jurídico del caso analizado." }}
+              </p>
+              <div class="lead-byline">
+                <span class="byline-author">Por {{ lead_post.author | default: "Redacción Eficiencia & Norma" }}</span>
+                <span class="byline-date">{{ lead_post.date | date: "%d de %B de %Y" }}</span>
+                <span class="byline-action">Texto completo</span>
+              </div>
+            </div>
+
+            <div class="lead-media">
               {% if lead_post.image %}
                 <img src="{{ lead_post.image | relative_url }}" alt="{{ lead_post.title }}" loading="lazy">
               {% else %}
-                <div class="fallback-banner">
-                  <span class="fallback-badge">ANÁLISIS EDITORIAL</span>
-                  <span class="fallback-icon">⚖️</span>
+                <div class="lead-media-placeholder">
+                  <span class="placeholder-tag">DOCUMENTO DE ANÁLISIS</span>
+                  <span class="placeholder-caption">EFICIENCIA &amp; NORMA · EDICIÓN REGULATORIA</span>
                 </div>
               {% endif %}
             </div>
-            <div class="featured-content">
-              <div class="meta-row">
-                <span class="badge-category">{{ lead_post.category | default: "Actualidad" }}</span>
-                <span class="post-date">📅 {{ lead_post.date | date: "%d/%m/%Y" }}</span>
-              </div>
-              <h2 class="featured-title">{{ lead_post.title }}</h2>
-              <p class="featured-excerpt">
-                {{ lead_post.excerpt | strip_html | truncatewords: 30 | default: "Haz clic para acceder al análisis completo y la descarga de documentación oficial." }}
-              </p>
-              <div class="author-row">
-                <span class="author-label">Por <strong>{{ lead_post.author | default: "Equipo Editorial" }}</strong></span>
-                <span class="read-more">Leer artículo completo →</span>
-              </div>
-            </div>
           </div>
         </a>
-      </article>
+      </section>
 
-      <!-- CUADRÍCULA DE ARTÍCULOS SECUNDARIOS Y COLUMNAS -->
+      <!-- ARTÍCULOS SECUNDARIOS (GRILLA EDITORIAL) -->
       {% if site.posts.size > 1 %}
-        <div class="section-divider">
-          <span>Últimas Columnas & Noticias</span>
+        <div class="grid-header">
+          <span class="grid-header-label">EDICIÓN CONTINUA</span>
         </div>
 
-        <div class="articles-grid">
+        <section class="columns-grid">
           {% for post in site.posts offset:1 %}
-            <article class="grid-card">
-              <a href="{{ post.url | relative_url }}" class="card-link">
+            <article class="column-card">
+              <a href="{{ post.url | relative_url }}" class="column-link">
                 {% if post.image %}
-                  <div class="card-thumbnail">
+                  <div class="column-media">
                     <img src="{{ post.image | relative_url }}" alt="{{ post.title }}" loading="lazy">
                   </div>
                 {% endif %}
-                <div class="card-body">
-                  <div class="meta-row">
-                    <span class="badge-category-small">{{ post.category | default: "Columna" }}</span>
-                    <span class="post-date-small">{{ post.date | date: "%d/%m/%Y" }}</span>
-                  </div>
-                  <h3 class="card-title">{{ post.title }}</h3>
-                  <p class="card-excerpt">
+                <div class="column-body">
+                  <span class="column-rubric">{{ post.category | default: "COLUMNA" | upcase }}</span>
+                  <h3 class="column-title">{{ post.title }}</h3>
+                  <p class="column-excerpt">
                     {{ post.excerpt | strip_html | truncatewords: 18 }}
                   </p>
-                  <div class="card-footer">
-                    <span class="author-mini">{{ post.author | default: "Redacción" }}</span>
-                    <span class="read-arrow">→</span>
+                  <div class="column-byline">
+                    <span>{{ post.author | default: "Comité Editorial" }}</span>
+                    <span>{{ post.date | date: "%d/%m/%Y" }}</span>
                   </div>
                 </div>
               </a>
             </article>
           {% endfor %}
-        </div>
+        </section>
       {% endif %}
 
     {% else %}
-      <div class="empty-state">
-        <div class="empty-icon">📰</div>
-        <h2>Edición en Preparación</h2>
-        <p>Los artículos subidos a la carpeta editorial se sincronizarán automáticamente aquí.</p>
+      <div class="standby-notice">
+        <h3>Edición en Proceso de Cierre</h3>
+        <p>Los artículos incorporados al repositorio se desplegarán automáticamente tras su validación.</p>
       </div>
     {% endif %}
 
-    <!-- ==========================================
-         SECCIÓN: EQUIPO EDITORIAL
-         ========================================== -->
-    <section id="equipo-editorial" class="team-section">
-      <div class="section-divider">
-        <span>Comité & Equipo Editorial</span>
+    <!-- SECCIÓN: COMITÉ EDITORIAL -->
+    <section id="equipo-editorial" class="editorial-board">
+      <div class="section-rule">
+        <span class="rule-title">COMITÉ &amp; EQUIPO EDITORIAL</span>
       </div>
-      <p class="section-lead">
-        Profesionales y estudiantes de Derecho y Economía dedicados al análisis crítico de políticas públicas, mercados regulados y libre competencia.
-      </p>
 
-      <div class="team-grid">
-        <div class="team-card">
-          <div class="member-avatar">⚖️</div>
-          <h3 class="member-name">Dirección Editorial</h3>
-          <span class="member-role">Coordinación General & Regulación</span>
-          <p class="member-desc">Supervisión de líneas editoriales, análisis de sentencias del TDLC y control de publicaciones.</p>
+      <div class="board-grid">
+        <div class="board-member">
+          <span class="member-division">DIRECCIÓN GENERAL</span>
+          <h4 class="member-name">Dirección Editorial</h4>
+          <p class="member-brief">Línea editorial, revisión de criterios regulatorios y supervisión general de publicaciones.</p>
         </div>
 
-        <div class="team-card">
-          <div class="member-avatar">📊</div>
-          <h3 class="member-name">Edición de Mercados</h3>
-          <span class="member-role">Libre Competencia & Cárteles</span>
-          <p class="member-desc">Investigación económica, fallos de concentración y tendencias en mercados financieros y consumo.</p>
+        <div class="board-member">
+          <span class="member-division">LIBRE COMPETENCIA</span>
+          <h4 class="member-name">Área de Mercados</h4>
+          <p class="member-brief">Monitoreo de resoluciones del TDLC, análisis de concentraciones y conductas colusivas.</p>
         </div>
 
-        <div class="team-card">
-          <div class="member-avatar">🏛️</div>
-          <h3 class="member-name">Políticas Públicas</h3>
-          <span class="member-role">Regulación & Litigios</span>
-          <p class="member-desc">Monitoreo legislativo, normativas sectoriales y análisis de impacto regulatorio.</p>
+        <div class="board-member">
+          <span class="member-division">REGULACIÓN SECTORIAL</span>
+          <h4 class="member-name">Políticas Públicas</h4>
+          <p class="member-brief">Evaluación de marcos normativos, proyectos legislativos e impacto institucional.</p>
         </div>
       </div>
     </section>
 
-    <!-- ==========================================
-         SECCIÓN: CONVOCATORIA (5 CUPOS)
-         ========================================== -->
-    <section id="convocatoria-seccion" class="convocatoria-section">
-      <div class="convocatoria-card">
-        <div class="convocatoria-header">
-          <span class="badge-cupos">🔥 Convocatoria Abierta · 5 Vacantes</span>
-          <h2 class="convocatoria-title">Súmate al Equipo de Eficiencia & Norma</h2>
-          <p class="convocatoria-desc">
-            Buscamos incorporar a <strong>5 nuevos analistas y redactores</strong> apasionados por el Derecho Económico, la Regulación de Mercados y las Políticas Públicas para publicar columnas de opinión, minutas de sentencias y análisis editorial.
-          </p>
+    <!-- SECCIÓN: CONVOCATORIA (5 CUPOS) -->
+    <section id="convocatoria-seccion" class="notice-call">
+      <div class="call-container">
+        <div class="call-top">
+          <span class="call-badge">PROCESO DE ADMISIÓN 2026</span>
+          <span class="call-quota">5 VACANTES</span>
         </div>
 
-        <div class="convocatoria-details">
-          <div class="detail-item">
-            <span class="detail-icon">📝</span>
-            <div>
-              <strong>Rol:</strong>
-              <span>Redacción periódica de columnas y análisis de actualidad.</span>
-            </div>
+        <h2 class="call-heading">Convocatoria Editorial: Redactores y Analistas Colaboradores</h2>
+        
+        <p class="call-statement">
+          Eficiencia &amp; Norma abre proceso formal para incorporar a 5 colaboradores al equipo de redacción. La labor contempla la elaboración de columnas de opinión, minutas de jurisprudencia económica y análisis crítico de regulación sectorial.
+        </p>
+
+        <div class="call-specs">
+          <div class="spec-block">
+            <span class="spec-label">Requisitos:</span>
+            <span class="spec-detail">Estudiantes de último año o graduados de Derecho o Economía con interés en libre competencia y regulación.</span>
           </div>
-          <div class="detail-item">
-            <span class="detail-icon">🌐</span>
-            <div>
-              <strong>Modalidad:</strong>
-              <span>100% Remoto, flexible y con publicación bajo tu autoría.</span>
-            </div>
+          <div class="spec-block">
+            <span class="spec-label">Modalidad:</span>
+            <span class="spec-detail">Colaboración a distancia con acreditación pública de autoría en cada publicación.</span>
           </div>
-          <div class="detail-item">
-            <span class="detail-icon">👥</span>
-            <div>
-              <strong>Cupos disponibles:</strong>
-              <span>5 plazas para redactores/as y columnistas colaboradores.</span>
-            </div>
+          <div class="spec-block">
+            <span class="spec-label">Plazas disponibles:</span>
+            <span class="spec-detail">5 redactores para el período en curso.</span>
           </div>
         </div>
 
-        <!-- BOTÓN AL GOOGLE FORM -->
-        <div class="convocatoria-action">
-          <a href="[suspicious link removed]" target="_blank" rel="noopener noreferrer" class="btn-postular">
-            📋 Completar Formulario de Postulación Oficial →
+        <div class="call-footer">
+          <a href="[suspicious link removed]" target="_blank" rel="noopener noreferrer" class="btn-formal">
+            Formulario Oficial de Postulación
           </a>
-          <span class="action-note">La selección se realizará por orden de recepción y revisión de antecedentes.</span>
+          <span class="call-subtext">La asignación se completará conforme a la revisión de antecedentes y orden de recepción.</span>
         </div>
       </div>
     </section>
@@ -189,434 +170,503 @@ layout: default
 </div>
 
 <script>
-  // Formatear fecha actual en español
-  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-  const today = new Date().toLocaleDateString('es-CL', options);
-  document.getElementById('current-date').textContent = today.charAt(0).toUpperCase() + today.slice(1);
+  // Fecha formal en castellano
+  const fecha = new Date();
+  const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  const fechaStr = fecha.toLocaleDateString('es-CL', opciones);
+  document.getElementById('live-date').textContent = fechaStr.charAt(0).toUpperCase() + fechaStr.slice(1);
 </script>
 
 <style>
+  /* TIPOGRAFÍA Y PALETA INSTITUCIONAL THE ECONOMIST / EL DINAMO */
   :root {
-    --burgundy: #7b1113;
-    --burgundy-dark: #580c0d;
-    --burgundy-light: #fbf5f5;
     --ink: #111111;
-    --ink-light: #444444;
-    --border-color: #e5e7eb;
-    --card-bg: #ffffff;
-    --page-bg: #f8f9fa;
+    --ink-subtle: #4a4a4a;
+    --ink-muted: #737373;
+    --burgundy: #8b1517;
+    --burgundy-dark: #630c0e;
+    --line: #dedede;
+    --line-subtle: #eaeaea;
+    --bg-page: #ffffff;
+    --bg-tint: #f7f7f7;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background-color: var(--page-bg);
+    background-color: var(--bg-page);
     color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    line-height: 1.6;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
   }
 
-  .newspaper-wrapper {
-    max-width: 1100px;
+  .edition-wrapper {
+    max-width: 1140px;
     margin: 0 auto;
-    padding: 20px 16px 60px;
-    animation: fadeIn 0.4s ease-out;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    padding: 0 20px 60px;
   }
 
   /* MASTHEAD */
   .masthead {
-    border-bottom: 3px double var(--burgundy);
-    padding-bottom: 12px;
-    margin-bottom: 32px;
+    border-bottom: 2px solid var(--ink);
+    padding-top: 16px;
+    margin-bottom: 30px;
   }
 
-  .masthead-top {
+  .masthead-meta {
     display: flex;
     justify-content: space-between;
-    font-size: 0.8rem;
-    color: #666;
-    border-bottom: 1px solid var(--border-color);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    border-bottom: 1px solid var(--line);
     padding-bottom: 6px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    gap: 8px;
+    letter-spacing: 0.08em;
   }
 
-  .masthead-main {
+  .masthead-branding {
     text-align: center;
-    padding: 10px 0 16px;
+    padding: 24px 0 16px;
   }
 
-  .newspaper-title {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 3rem;
+  .brand-name {
+    font-family: "Times New Roman", Times, Georgia, serif;
+    font-size: 3.4rem;
     font-weight: 900;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
     color: var(--burgundy);
-    line-height: 1.1;
+    line-height: 1;
     margin-bottom: 6px;
   }
 
-  .newspaper-subtitle {
-    font-size: 1rem;
-    color: var(--ink-light);
+  .brand-baseline {
+    font-family: Georgia, serif;
+    font-size: 0.95rem;
+    color: var(--ink-subtle);
     font-style: italic;
+    letter-spacing: 0.01em;
   }
 
-  .editorial-nav {
+  .masthead-nav {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px;
-    border-top: 1px solid var(--border-color);
-    padding-top: 10px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--ink-light);
+    gap: 28px;
+    border-top: 1px solid var(--line);
+    padding: 10px 0;
     flex-wrap: wrap;
   }
 
-  .nav-item { text-decoration: none; color: inherit; transition: color 0.2s; }
-  .nav-item:hover { color: var(--burgundy); }
-  .nav-highlight { color: var(--burgundy); border-bottom: 2px solid var(--burgundy); padding-bottom: 2px; }
-
-  /* ARTÍCULO DESTACADO */
-  .featured-card {
-    background: var(--card-bg);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-    border: 1px solid var(--border-color);
-    margin-bottom: 36px;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-  }
-
-  .featured-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(123, 17, 19, 0.12);
-  }
-
-  .featured-link { text-decoration: none; color: inherit; display: block; }
-
-  .featured-grid {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-  }
-
-  .featured-media {
-    position: relative;
-    min-height: 280px;
-    background: var(--burgundy-dark);
-  }
-
-  .featured-media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .fallback-banner {
-    width: 100%;
-    height: 100%;
-    min-height: 280px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, var(--burgundy-dark) 0%, var(--burgundy) 100%);
-    color: #fff;
-    padding: 24px;
-    text-align: center;
-  }
-
-  .fallback-badge {
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    border: 1px solid rgba(255,255,255,0.4);
-    padding: 4px 10px;
-    border-radius: 4px;
-    margin-bottom: 12px;
-  }
-
-  .fallback-icon { font-size: 3rem; }
-
-  .featured-content {
-    padding: 28px 24px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .meta-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-
-  .badge-category {
-    background: var(--burgundy);
-    color: #fff;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    padding: 3px 8px;
-    border-radius: 4px;
-  }
-
-  .post-date { font-size: 0.8rem; color: #777; }
-
-  .featured-title {
-    font-family: Georgia, serif;
-    font-size: 1.8rem;
-    line-height: 1.25;
+  .nav-link {
+    text-decoration: none;
     color: var(--ink);
-    margin-bottom: 12px;
-    font-weight: 800;
-  }
-
-  .featured-excerpt {
-    font-size: 0.95rem;
-    color: var(--ink-light);
-    margin-bottom: 20px;
-    line-height: 1.6;
-  }
-
-  .author-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 14px;
-    border-top: 1px solid var(--border-color);
-    font-size: 0.85rem;
-  }
-
-  .read-more { color: var(--burgundy); font-weight: 700; }
-
-  /* DIVISORES */
-  .section-divider {
-    display: flex;
-    align-items: center;
-    margin: 40px 0 24px;
-  }
-
-  .section-divider::before,
-  .section-divider::after {
-    content: "";
-    flex: 1;
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .section-divider span {
-    padding: 0 16px;
-    font-size: 0.85rem;
-    font-weight: 800;
+    font-size: 0.78rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
+    transition: color 0.15s ease;
+  }
+
+  .nav-link:hover {
     color: var(--burgundy);
   }
 
-  /* GRILLA DE ARTÍCULOS */
-  .articles-grid {
+  .nav-link-special {
+    color: var(--burgundy);
+    border-bottom: 1px solid var(--burgundy);
+  }
+
+  /* ARTÍCULO PRINCIPAL */
+  .lead-story {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 36px;
+    margin-bottom: 36px;
+  }
+
+  .lead-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .lead-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-    gap: 24px;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 36px;
+    align-items: center;
   }
 
-  .grid-card {
-    background: var(--card-bg);
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .grid-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  }
-
-  .card-link { text-decoration: none; color: inherit; display: flex; flex-direction: column; height: 100%; }
-
-  .card-thumbnail { height: 170px; overflow: hidden; background: #eaeaea; }
-  .card-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
-
-  .card-body { padding: 20px; display: flex; flex-direction: column; flex: 1; }
-
-  .badge-category-small {
-    background: var(--burgundy-light);
+  .rubric {
+    display: inline-block;
     color: var(--burgundy);
-    border: 1px solid rgba(123, 17, 19, 0.2);
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 3px;
-    text-transform: uppercase;
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
   }
 
-  .post-date-small { font-size: 0.75rem; color: #888; }
+  .lead-title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 2.3rem;
+    line-height: 1.18;
+    color: var(--ink);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+  }
 
-  .card-title {
-    font-family: Georgia, serif;
-    font-size: 1.25rem;
+  .lead-title:hover {
+    color: var(--burgundy);
+  }
+
+  .lead-standfirst {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--ink-subtle);
+    margin-bottom: 22px;
+  }
+
+  .lead-byline {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+    border-top: 1px solid var(--line-subtle);
+    padding-top: 14px;
+  }
+
+  .byline-author {
     font-weight: 700;
-    line-height: 1.35;
-    margin: 10px 0;
     color: var(--ink);
   }
 
-  .card-excerpt { font-size: 0.88rem; color: #666; margin-bottom: 16px; flex: 1; }
-
-  .card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid var(--border-color);
-    padding-top: 10px;
-    font-size: 0.82rem;
-    color: #555;
-  }
-
-  .read-arrow { color: var(--burgundy); font-weight: 700; }
-
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    background: var(--card-bg);
-    border-radius: 8px;
-    border: 1px dashed var(--border-color);
-  }
-  .empty-icon { font-size: 3rem; margin-bottom: 10px; }
-
-  /* EQUIPO EDITORIAL */
-  .team-section { margin: 50px 0 40px; text-align: center; }
-  .section-lead {
-    max-width: 680px;
-    margin: 0 auto 30px;
-    font-size: 0.95rem;
-    color: #555;
-    line-height: 1.6;
-  }
-  .team-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 20px;
-  }
-  .team-card {
-    background: #ffffff;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 24px 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    transition: transform 0.2s ease, border-color 0.2s ease;
-  }
-  .team-card:hover { transform: translateY(-3px); border-color: var(--burgundy); }
-  .member-avatar {
-    width: 48px;
-    height: 48px;
-    background: var(--burgundy-light);
-    border-radius: 50%;
-    margin: 0 auto 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-  }
-  .member-name { font-size: 1.15rem; color: #111; margin-bottom: 4px; font-weight: 700; }
-  .member-role {
-    display: block;
-    font-size: 0.8rem;
+  .byline-action {
     color: var(--burgundy);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    margin-left: auto;
+  }
+
+  .lead-media {
+    background-color: var(--bg-tint);
+    min-height: 290px;
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+
+  .lead-media img {
+    width: 100%;
+    height: 100%;
+    min-height: 290px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .lead-media-placeholder {
+    min-height: 290px;
+    background: #1a1a1a;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    text-align: center;
+    border-top: 4px solid var(--burgundy);
+  }
+
+  .placeholder-tag {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    color: var(--burgundy);
+    background: #ffffff;
+    padding: 4px 10px;
+    margin-bottom: 14px;
+  }
+
+  .placeholder-caption {
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    color: #cccccc;
+  }
+
+  /* SECCIÓN EDICIÓN CONTINUA (GRILLA) */
+  .grid-header {
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: 24px;
+    padding-bottom: 4px;
+  }
+
+  .grid-header-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: var(--ink);
+  }
+
+  .columns-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 40px;
+    margin-bottom: 40px;
+  }
+
+  .column-card {
+    border-right: 1px solid var(--line-subtle);
+    padding-right: 24px;
+  }
+
+  .column-card:last-child {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .column-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .column-media {
+    height: 160px;
+    background: var(--bg-tint);
+    border: 1px solid var(--line-subtle);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .column-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .column-rubric {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--burgundy);
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .column-title {
+    font-family: Georgia, serif;
+    font-size: 1.22rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ink);
     margin-bottom: 10px;
   }
-  .member-desc { font-size: 0.88rem; color: #666; line-height: 1.5; }
 
-  /* CONVOCATORIA */
-  .convocatoria-section { margin: 50px 0 20px; }
-  .convocatoria-card {
-    background: linear-gradient(135deg, #ffffff 0%, #fdf8f8 100%);
-    border: 2px solid var(--burgundy);
-    border-radius: 12px;
-    padding: 36px 30px;
-    box-shadow: 0 6px 20px rgba(123, 17, 19, 0.08);
+  .column-title:hover {
+    color: var(--burgundy);
   }
-  .badge-cupos {
-    display: inline-block;
-    background: var(--burgundy);
-    color: #fff;
+
+  .column-excerpt {
+    font-size: 0.9rem;
+    color: var(--ink-subtle);
+    line-height: 1.55;
+    margin-bottom: 16px;
+    flex: 1;
+  }
+
+  .column-byline {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+    border-top: 1px solid var(--line-subtle);
+    padding-top: 10px;
+  }
+
+  /* COMITÉ EDITORIAL */
+  .editorial-board {
+    margin-bottom: 50px;
+  }
+
+  .section-rule {
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 4px;
+    margin-bottom: 24px;
+  }
+
+  .rule-title {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: var(--ink);
+  }
+
+  .board-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  .board-member {
+    border-top: 2px solid var(--burgundy);
+    padding-top: 14px;
+  }
+
+  .member-division {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--burgundy);
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .member-name {
+    font-family: Georgia, serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .member-brief {
+    font-size: 0.88rem;
+    color: var(--ink-subtle);
+    line-height: 1.5;
+  }
+
+  /* CONVOCATORIA (FORMATO BOLETÍN INSTITUCIONAL) */
+  .notice-call {
+    margin-bottom: 40px;
+  }
+
+  .call-container {
+    background-color: var(--bg-tint);
+    border-top: 4px solid var(--burgundy);
+    border-bottom: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    padding: 32px 36px;
+  }
+
+  .call-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .call-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: var(--burgundy);
+  }
+
+  .call-quota {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    background: var(--ink);
+    color: #ffffff;
+    padding: 3px 8px;
+  }
+
+  .call-heading {
+    font-family: Georgia, serif;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.25;
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+  }
+
+  .call-statement {
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--ink-subtle);
+    margin-bottom: 24px;
+    max-width: 860px;
+  }
+
+  .call-specs {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 16px 0;
+    margin-bottom: 26px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .spec-label {
+    display: block;
     font-size: 0.75rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 5px 12px;
-    border-radius: 20px;
-    margin-bottom: 14px;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
   }
-  .convocatoria-title {
-    font-family: Georgia, serif;
-    font-size: 2rem;
-    color: #111;
-    margin-bottom: 12px;
-    font-weight: 800;
+
+  .spec-detail {
+    font-size: 0.85rem;
+    color: var(--ink-subtle);
+    line-height: 1.45;
   }
-  .convocatoria-desc {
-    font-size: 1.05rem;
-    color: #444;
-    line-height: 1.7;
-    max-width: 820px;
-    margin-bottom: 24px;
+
+  .call-footer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
   }
-  .convocatoria-details {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 16px;
-    background: #ffffff;
-    border: 1px solid #eaeaea;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 28px;
-  }
-  .detail-item { display: flex; align-items: flex-start; gap: 10px; font-size: 0.9rem; color: #333; }
-  .detail-icon { font-size: 1.3rem; }
-  .convocatoria-action { text-align: center; padding-top: 10px; }
-  .btn-postular {
+
+  .btn-formal {
     display: inline-block;
     background-color: var(--burgundy);
     color: #ffffff !important;
     text-decoration: none;
-    font-size: 1.05rem;
+    font-size: 0.82rem;
     font-weight: 700;
-    padding: 14px 28px;
-    border-radius: 8px;
-    box-shadow: 0 4px 14px rgba(123, 17, 19, 0.25);
-    transition: all 0.25s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 12px 22px;
+    transition: background-color 0.15s ease;
   }
-  .btn-postular:hover {
-    background-color: #9c1518;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(123, 17, 19, 0.35);
-  }
-  .action-note { display: block; font-size: 0.8rem; color: #777; margin-top: 10px; }
 
-  /* RESPONSIVO MÓVILES */
-  @media (max-width: 768px) {
-    .newspaper-title { font-size: 2.1rem; }
-    .masthead-top { flex-direction: column; align-items: center; gap: 4px; }
-    .featured-grid { grid-template-columns: 1fr; }
-    .featured-media { min-height: 200px; }
-    .featured-title { font-size: 1.45rem; }
-    .articles-grid { grid-template-columns: 1fr; }
-    .convocatoria-card { padding: 24px 18px; }
-    .convocatoria-title { font-size: 1.5rem; }
-    .btn-postular { width: 100%; text-align: center; font-size: 0.95rem; }
-    .convocatoria-details { grid-template-columns: 1fr; }
+  .btn-formal:hover {
+    background-color: var(--burgundy-dark);
+  }
+
+  .call-subtext {
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+  }
+
+  .standby-notice {
+    text-align: center;
+    padding: 50px 20px;
+    border: 1px solid var(--line);
+    background: var(--bg-tint);
+  }
+
+  /* RESPONSIVIDAD PARA CELULARES */
+  @media (max-width: 820px) {
+    .brand-name { font-size: 2.4rem; }
+    .masthead-meta { flex-direction: column; gap: 4px; text-align: center; }
+    .lead-grid { grid-template-columns: 1fr; gap: 20px; }
+    .lead-title { font-size: 1.65rem; }
+    .columns-grid { grid-template-columns: 1fr; gap: 24px; }
+    .column-card { border-right: none; border-bottom: 1px solid var(--line-subtle); padding-right: 0; padding-bottom: 20px; }
+    .board-grid { grid-template-columns: 1fr; gap: 20px; }
+    .call-specs { grid-template-columns: 1fr; gap: 14px; }
+    .call-container { padding: 22px 18px; }
+    .btn-formal { width: 100%; text-align: center; }
   }
 </style>
