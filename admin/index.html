@@ -1,63 +1,178 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel Editorial | Eficiencia & Norma</title>
+  <style>
+    :root {
+      --burgundy: #7b1113;
+      --burgundy-hover: #9c1518;
+      --ink: #111111;
+      --bg: #f5f6f8;
+      --card-bg: #ffffff;
+      --border: #dcdfe4;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--ink);
+      padding: 24px 16px 60px;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 32px 28px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+      border-top: 5px solid var(--burgundy);
+    }
+    h1 {
+      font-size: 1.6rem;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      color: var(--burgundy);
+    }
+    p.desc {
+      font-size: 0.92rem;
+      color: #666;
+      margin-bottom: 24px;
+    }
+    .field {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: #fafafa;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--burgundy);
+      background: #fff;
+    }
+    textarea {
+      min-height: 240px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+    .btn-submit {
+      width: 100%;
+      background: var(--burgundy);
+      color: #fff;
+      padding: 14px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 10px;
+    }
+    .btn-submit:hover {
+      background: var(--burgundy-hover);
+    }
+    .help-text {
+      font-size: 0.8rem;
+      color: #777;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
 
-  <!-- CONFIGURACIÓN DIRECTA INCRUSTADA (Cero errores de lectura) -->
+  <div class="container">
+    <h1>Redacción | Eficiencia & Norma</h1>
+    <p class="desc">Completa los campos para preparar y publicar tu artículo en el diario digital.</p>
+
+    <form id="postForm">
+      <div class="field">
+        <label for="title">Título del Artículo</label>
+        <input type="text" id="title" required placeholder="Ej: El estándar probatorio en sentencias del TDLC">
+      </div>
+
+      <div class="field">
+        <label for="author">Autor o Autora</label>
+        <input type="text" id="author" required placeholder="Ej: Víctor Huaiquian">
+      </div>
+
+      <div class="field">
+        <label for="category">Línea Temática / Sección</label>
+        <select id="category" required>
+          <option value="Cárteles & Mercados">Cárteles & Mercados</option>
+          <option value="Banca & Fisco">Banca & Fisco</option>
+          <option value="Consumo & Litigios">Consumo & Litigios</option>
+          <option value="Regulación Ambiental">Regulación Ambiental</option>
+          <option value="Coyuntura & Políticas">Coyuntura & Políticas</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="content">Cuerpo del Artículo</label>
+        <textarea id="content" required placeholder="Escribe o pega aquí el contenido de la columna o artículo..."></textarea>
+        <p class="help-text">Puedes separar párrafos normalmente. Si quieres agregar una foto, puedes arrastrarla y soltarla directamente en la pantalla de confirmación.</p>
+      </div>
+
+      <button type="submit" class="btn-submit">🚀 Preparar y Publicar en GitHub</button>
+    </form>
+  </div>
+
   <script>
-    window.CMS_MANUAL_INIT = true;
-  </script>
+    document.getElementById('postForm').addEventListener('submit', function(e) {
+      e.preventDefault();
 
-  <!-- Motor Sveltia CMS -->
-  <script src="[suspicious link removed]"></script>
+      const title = document.getElementById('title').value.trim();
+      const author = document.getElementById('author').value.trim();
+      const category = document.getElementById('category').value;
+      const content = document.getElementById('content').value.trim();
 
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      CMS.init({
-        config: {
-          backend: {
-            name: 'github',
-            repo: 'victorhr2/Eficiencia-Norma-',
-            branch: 'main'
-          },
-          media_folder: 'assets/img',
-          public_folder: '/assets/img',
-          collections: [
-            {
-              name: 'articulos',
-              label: 'Artículos & Columnas',
-              folder: '_posts',
-              create: true,
-              slug: '{{year}}-{{month}}-{{day}}-{{slug}}',
-              fields: [
-                { label: 'Diseño', name: 'layout', widget: 'hidden', default: 'post' },
-                { label: 'Título del Artículo', name: 'title', widget: 'string' },
-                { label: 'Autor(a)', name: 'author', widget: 'string' },
-                { label: 'Fecha', name: 'date', widget: 'datetime', format: 'YYYY-MM-DD' },
-                {
-                  label: 'Sección Editorial',
-                  name: 'category',
-                  widget: 'select',
-                  options: [
-                    'Cárteles & Mercados',
-                    'Banca & Fisco',
-                    'Consumo & Litigios',
-                    'Regulación Ambiental',
-                    'Coyuntura & Políticas'
-                  ]
-                },
-                { label: 'Foto Destacada', name: 'image', widget: 'image', required: false },
-                { label: 'Contenido del Artículo', name: 'body', widget: 'markdown' }
-              ]
-            }
-          ]
-        }
-      });
+      // Generar fecha actual YYYY-MM-DD
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const today = `${yyyy}-${mm}-${dd}`;
+
+      // Generar slug para el nombre del archivo
+      const cleanSlug = title
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quitar tildes
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .substring(0, 40);
+
+      const filename = `${today}-${cleanSlug}.md`;
+
+      // Armar la estructura del post
+      const fileData = `---\nlayout: post\ntitle: "${title}"\nauthor: "${author}"\ndate: ${today}\ncategory: "${category}"\n---\n\n${content}\n`;
+
+      // Armar la URL mágica de GitHub que abre el archivo prellenado
+      const repo = 'victorhr2/Eficiencia-Norma-';
+      const encodedFilename = encodeURIComponent(filename);
+      const encodedContent = encodeURIComponent(fileData);
+
+      const targetUrl = `[suspicious link removed]{repo}/new/main/_posts?filename=${encodedFilename}&value=${encodedContent}`;
+
+      // Redirigir a GitHub con todo listo
+      window.location.href = targetUrl;
     });
   </script>
-</head>
-<body style="margin: 0; background-color: #f4f5f7;">
+
 </body>
 </html>
