@@ -1,113 +1,214 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ page.title }} | {{ site.title }}</title>
-  <style>
-    body {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 30px 20px;
-      font-family: "Merriweather", "Georgia", "Times New Roman", serif;
-      color: #1a1a1a;
-      background-color: #fdfdfd;
-      line-height: 1.8;
-      font-size: 1.1rem;
-    }
-    .back-link {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .back-link a {
-      color: #7b1113;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .header-post {
-      text-align: center;
-      margin: 40px 0 25px;
-    }
-    .category {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      letter-spacing: 0.1em;
-      color: #7b1113;
-      font-weight: 700;
-    }
-    h1 {
-      font-size: 2.5rem;
-      line-height: 1.2;
-      margin: 15px 0;
-      font-weight: 900;
-    }
-    .byline {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: #666;
-      font-size: 0.95rem;
-      font-style: italic;
-    }
-    hr {
-      border: 0;
-      border-top: 1px solid #ddd;
-      margin: 30px 0;
-    }
-    .content p {
-      margin-bottom: 1.6em;
-      text-align: justify;
-    }
-    .content blockquote {
-      margin: 25px 0;
-      padding: 10px 25px;
-      border-left: 3px solid #7b1113;
-      background-color: #f7f7f5;
-      font-style: italic;
-    }
-    .content img {
-      max-width: 100%;
-      height: auto;
-      display: block;
-      margin: 25px auto;
-    }
-    footer {
-      margin-top: 60px;
-      padding-top: 20px;
-      border-top: 1px solid #ccc;
-      text-align: center;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size: 0.85rem;
-      color: #777;
-    }
-  </style>
-</head>
-<body>
+---
+layout: default
+---
 
-  <div class="back-link">
-    <a href="{{ '/' | relative_url }}">← Volver a {{ site.title }}</a>
-  </div>
+<!-- Barra de progreso de lectura superior -->
+<div id="reading-progress" style="position: fixed; top: 0; left: 0; height: 4px; background: #7b1113; width: 0%; z-index: 9999; transition: width 0.1s ease-out;"></div>
 
-  <header class="header-post">
-    <div class="category">{{ page.category | default: "Artículo de Fondo" }}</div>
-    <h1>{{ page.title }}</h1>
-    <div class="byline">
-      Por <strong>{{ page.author }}</strong><br>
-      Publicado el {{ page.date | date: "%d de %B de %Y" }}
+<article class="article-container">
+  <header class="article-header">
+    <div class="article-meta-top">
+      <span class="category-badge">{{ page.category | default: "Actualidad & Regulación" }}</span>
+      <span class="date-text">📅 {{ page.date | date: "%d de %B de %Y" }}</span>
+    </div>
+    <h1 class="article-title">{{ page.title }}</h1>
+    <div class="article-byline">
+      <div class="author-avatar">✍️</div>
+      <div class="author-info">
+        <span class="author-name">{{ page.author | default: "Equipo Editorial" }}</span>
+        <span class="reading-time">Diario Eficiencia & Norma · Lectura en profundidad</span>
+      </div>
     </div>
   </header>
 
-  <hr>
-
-  <main class="content">
+  <div class="article-body">
     {{ content }}
-  </main>
+  </div>
 
-  <footer>
-    <p><strong>{{ site.title }}</strong> | {{ site.institution }}</p>
-    <p><a href="{{ '/' | relative_url }}">Volver a la portada principal</a></p>
+  <footer class="article-footer">
+    <a href="{{ site.baseurl }}/" class="back-button">
+      <span class="arrow">←</span> Volver a la portada principal
+    </a>
   </footer>
+</article>
 
-</body>
-</html>
+<style>
+  /* Animación suave de entrada */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .article-container {
+    max-width: 780px;
+    margin: 32px auto 60px;
+    padding: 0 20px;
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .article-header {
+    border-bottom: 2px solid #eaeaea;
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+
+  .article-meta-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .category-badge {
+    background-color: #7b1113;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  .date-text {
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .article-title {
+    font-size: 2.3rem;
+    line-height: 1.25;
+    color: #111111;
+    font-weight: 800;
+    margin: 0 0 20px 0;
+    letter-spacing: -0.02em;
+  }
+
+  .article-byline {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .author-avatar {
+    width: 38px;
+    height: 38px;
+    background: #f0f2f5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+
+  .author-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .author-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #222;
+  }
+
+  .reading-time {
+    font-size: 0.8rem;
+    color: #777;
+  }
+
+  /* Cuerpo del artículo con alta legibilidad */
+  .article-body {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: #2c3e50;
+    word-break: break-word;
+  }
+
+  .article-body p {
+    margin-bottom: 1.4em;
+  }
+
+  .article-body h2, .article-body h3 {
+    color: #7b1113;
+    margin-top: 1.8em;
+    margin-bottom: 0.6em;
+    font-weight: 700;
+  }
+
+  .article-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 24px auto;
+    display: block;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease;
+  }
+
+  .article-body img:hover {
+    transform: scale(1.01);
+  }
+
+  .article-body blockquote {
+    border-left: 4px solid #7b1113;
+    background: #fbfbfb;
+    padding: 16px 20px;
+    margin: 24px 0;
+    font-style: italic;
+    color: #555;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .article-footer {
+    margin-top: 50px;
+    padding-top: 24px;
+    border-top: 1px solid #eaeaea;
+  }
+
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #f5f6f8;
+    color: #7b1113;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    transition: all 0.25s ease;
+  }
+
+  .back-button:hover {
+    background-color: #7b1113;
+    color: #ffffff;
+    transform: translateX(-4px);
+  }
+
+  /* Adaptación a teléfonos móviles */
+  @media (max-width: 600px) {
+    .article-container {
+      margin-top: 20px;
+      padding: 0 16px;
+    }
+    .article-title {
+      font-size: 1.75rem;
+    }
+    .article-body {
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+  }
+</style>
+
+<script>
+  // Barra de progreso de lectura en scroll
+  window.addEventListener('scroll', () => {
+    const docEl = document.documentElement;
+    const scrollTop = docEl.scrollTop || document.body.scrollTop;
+    const scrollHeight = docEl.scrollHeight - docEl.clientHeight;
+    const progress = (scrollTop / scrollHeight) * 100;
+    document.getElementById('reading-progress').style.width = progress + '%';
+  });
+</script>
