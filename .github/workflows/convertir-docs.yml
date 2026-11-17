@@ -1,13 +1,13 @@
-name: Publicar Documentos Automáticamente
+name: Publicador Universal de Documentos
 
 on:
   push:
     paths:
-      - '_borradores/**.docx'
+      - '_borradores/**'
   workflow_dispatch:
 
 jobs:
-  convertir_doc:
+  procesar_documentos:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -16,61 +16,67 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Instalar convertidor Pandoc
-        run: sudo apt-get update && sudo apt-get install -y pandoc
+      - name: Instalar herramientas de conversión (Pandoc y Poppler)
+        run: sudo apt-get update && sudo apt-get install -y pandoc poppler-utils
 
-      - name: Procesar archivos Docx
+      - name: Procesar borradores (DOCX, PDF, TXT)
         run: |
-          mkdir -p assets/img
-          mkdir -p _posts
+          mkdir -p assets/img assets/docs _posts
+          today=$(date +%Y-%m-%d)
           
-          for file in _borradores/*.docx; do
+          for file in _borradores/*; do
             [ -f "$file" ] || continue
-            
-            # Nombre base y fecha
-            base_name=$(basename "$file" .docx | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
-            today=$(date +%Y-%m-%d)
-            output_post="_posts/${today}-${base_name}.md"
-            img_dir="assets/img/${base_name}"
-            
+            ext="${file##*.}"
+            filename=$(basename "$file")
+            base_name="${filename%.*}"
+            clean_slug=$(echo "$base_name" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-')
+            clean_title=$(echo "$base_name" | tr '-' ' ' | tr '_' ' ')
+            output_post="_posts/${today}-${clean_slug}.md"
+            img_dir="assets/img/${clean_slug}"
             mkdir -p "$img_dir"
+
+            # 1. CASO DOCX
+            if [ "$ext" = "docx" ]; then
+              pandoc "$file" -f docx -t markdown --extract-media="." -o temp.md
+              if [ -d "media" ]; then
+                mv media/* "$img_dir/" 2>/dev/null || true
+                rm -rf media
+                sed -i "s|media/|/assets/img/${clean_slug}/|g" temp.md
+              fi
             
-            # Extraer imágenes del docx y convertir a texto
-            pandoc "$file" -f docx -t markdown --extract-media="." -o temp.md
-            
-            # Mover imágenes extraídas a la carpeta de assets
-            if [ -d "media" ]; then
-              mv media/* "$img_dir/" 2>/dev/null || true
-              rm -rf media
-              # Ajustar rutas de las imágenes en el texto
-              sed -i "s|media/|/assets/img/${base_name}/|g" temp.md
+            # 2. CASO PDF
+            elif [ "$ext" = "pdf" ]; then
+              # Extraer texto del PDF
+              pdftotext "$file" temp.md
+              # Extraer imágenes del PDF
+              pdfimages -png "$file" "$img_dir/img" 2>/dev/null || true
+              # Copiar PDF original para descarga de los lectores
+              cp "$file" "assets/docs/${today}-${clean_slug}.pdf"
+              echo -e "\n\n> 📥 **[Descargar documento original en PDF](/assets/docs/${today}-${clean_slug}.pdf)**\n" >> temp.md
+
+            # 3. CASO TXT / MD
+            elif [ "$ext" = "txt" ] || [ "$ext" = "md" ]; then
+              cp "$file" temp.md
             fi
-            
-            # Título limpio a partir del nombre del archivo
-            clean_title=$(basename "$file" .docx | tr '-' ' ' | tr '_' ' ')
-            
-            # Crear cabecera con el diseño del diario
+
+            # Inyectar plantilla editorial y publicar
             cat <<EOF > "$output_post"
           ---
           layout: post
           title: "${clean_title}"
           author: "Equipo Editorial"
           date: ${today}
-          category: "Coyuntura & Políticas"
+          category: "Cárteles & Mercados"
           ---
 
           EOF
             cat temp.md >> "$output_post"
-            rm -f temp.md
-            
-            # Eliminar el borrador para no reprocesarlo
-            rm -f "$file"
+            rm -f temp.md "$file"
           done
 
-      - name: Publicar cambios en la web
+      - name: Publicar cambios automáticamente
         run: |
           git config --global user.name "Bot Eficiencia & Norma"
           git config --global user.email "bot@eficiencia-norma.cl"
-          git add _posts/ assets/img/ _borradores/
-          git diff --quiet && git diff --staged --quiet || git commit -m "Auto: Publicación de nuevo artículo desde Docs"
-          git push
+          git add _posts/ assets/ _borradores/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto: Publicación multiformato desde _borradores" && git push)
