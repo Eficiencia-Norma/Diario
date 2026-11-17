@@ -41,13 +41,17 @@ jobs:
                       fpath = os.path.join(root, file)
                       size_mb = os.path.getsize(fpath) / (1024 * 1024)
                       if size_mb > 2.5:
-                          advertencias.append(f"⚠️ **Imagen muy pesada:** `{fpath}` ({size_mb:.2f} MB). Podría ralentizar la carga en teléfonos móviles.")
+                          advertencias.append(f"⚠️ Imagen pesada: '{fpath}' ({size_mb:.2f} MB). Puede ralentizar celulares.")
                       ext = os.path.splitext(file)[1].lower()
                       if ext not in ['.jpg', '.jpeg', '.png', '.webp', '.svg', '.gif']:
-                          advertencias.append(f"⚠️ **Formato no óptimo:** `{fpath}` tiene extensión `{ext}`.")
+                          advertencias.append(f"⚠️ Formato no óptimo: '{fpath}' con extensión '{ext}'.")
 
           # 2. Recorrer archivos de contenido y plantillas
           rutas_inspeccionar = ["index.html", "_layouts", "_includes", "_posts"]
+
+          # Patrones regex seguros
+          patron_if = re.compile(r'\{%\s*if\b')
+          patron_endif = re.compile(r'\{%\s*endif\s*%\}')
 
           for ruta in rutas_inspeccionar:
               if not os.path.exists(ruta):
@@ -61,72 +65,51 @@ jobs:
               for filepath in archivos:
                   archivos_auditados += 1
                   with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
-                      lineas = f.readlines()
+                      contenido = f.read()
 
-                  contenido = "".join(lineas)
-
-                  # A) Detectar etiquetas Liquid rotas (llaves desbalanceadas)
-                  total_if = len(re.findall(r'\{%\s*if\b', contenido))
-                  total_endif = len(re.findall(r'\{%\s*endif\s*%\}', contenido))
+                  # A) Validar etiquetas Liquid pareadas
+                  total_if = len(patron_if.findall(contenido))
+                  total_endif = len(patron_endif.findall(contenido))
                   if total_if != total_endif:
-                      errores.append(f"❌ **Error Liquid en `{filepath}`:** Tienes {total_if} `{% if %}` y {total_endif} `{% endif %}`. Etiqueta sin cerrar.")
+                      errores.append(f"❌ Error de plantilla en '{filepath}': Hay {total_if} 'if' y {total_endif} 'endif' (etiqueta sin cerrar).")
 
-                  # B) Validar que cada imagen referenciada exista realmente
-                  # Markdown: ![alt](url)
+                  # B) Validar que las imágenes existan
                   md_imgs = re.findall(r'!\\[.*?\\]\\((.*?)\\)', contenido)
-                  # HTML: <img src="url">
                   html_imgs = re.findall(r'<img[^>]+src=["\']([^"\']+)["\']', contenido)
 
-                  todas_imgs = md_imgs + html_imgs
-
-                  for img in todas_imgs:
-                      # Ignorar imágenes externas con http/https o base64
+                  for img in (md_imgs + html_imgs):
                       if img.startswith(('http://', 'https://', 'data:')):
                           continue
 
-                      # Limpiar etiquetas baseurl de Liquid
+                      # Limpieza de ruta relativa
                       clean_img = re.sub(r'\{\{\s*site\.baseurl\s*\}\}', '', img)
                       clean_img = clean_img.replace('/Eficiencia-Norma-/', '').strip().lstrip('/')
                       clean_img = clean_img.split('?')[0].split('#')[0]
 
                       if clean_img and not clean_img.startswith('{{'):
-                          # Verificar si el archivo existe en disco
                           if not os.path.exists(clean_img):
-                              errores.append(f"❌ **Foto rota en `{filepath}`:** No se encuentra el archivo `{clean_img}` en el repositorio.")
+                              errores.append(f"❌ Foto rota en '{filepath}': No existe el archivo '{clean_img}'.")
 
-                  # C) Validar que los enlaces internos a convocatorias existan
+                  # C) Validar ancla de convocatoria
                   if 'href="#convocatoria-seccion"' in contenido:
                       if 'id="convocatoria-seccion"' not in contenido and not os.path.exists("index.html"):
-                          advertencias.append(f"⚠️ **Enlace huérfano en `{filepath}`:** Hace referencia a `#convocatoria-seccion` pero no se detectó el id.")
+                          advertencias.append(f"⚠️ Enlace huérfano en '{filepath}': Hace referencia a '#convocatoria-seccion'.")
 
-          # Generar Resumen Ejecutivo en GitHub Actions
-          summary_file = os.environ.get('GITHUB_STEP_SUMMARY')
-          reporte = f"## 📋 Reporte del Auditor Senior de Eficiencia & Norma\n\n"
-          reporte += f"- **Archivos analizados:** `{archivos_auditados}`\n"
-          reporte += f"- **Errores críticos:** `{len(errores)}`\n"
-          reporte += f"- **Advertencias de rendimiento:** `{len(advertencias)}`\n\n"
+          # 3. Reporte de Resultados
+          print("\n" + "="*50)
+          print(f"📊 RESUMEN AUDITORÍA: {archivos_auditados} archivos inspeccionados")
+          print("="*50)
 
           if advertencias:
-              reporte += "### ⚠️ Observaciones y Recomendaciones:\n"
+              print("\n⚠️ ADVERTENCIAS DE RENDIMIENTO:")
               for adv in advertencias:
-                  reporte += f"- {adv}\n"
-              reporte += "\n"
+                  print(f"  - {adv}")
 
           if errores:
-              reporte += "### 🚨 Errores Críticos que Requieren Atención:\n"
+              print("\n🚨 ERRORES CRÍTICOS DETECTADOS:")
               for err in errores:
-                  reporte += f"- {err}\n"
-              print("\n🚨 Se detectaron fallas críticas de integridad:")
-              for err in errores:
-                  print(err)
-          else:
-              reporte += "### ✅ ¡Sitio Web en Estado Óptimo!\nNo se encontraron fotos caídas, errores de plantilla ni código roto.\n"
-              print("\n✅ Auditoría finalizada con éxito: Cero errores críticos.")
-
-          if summary_file:
-              with open(summary_file, 'a', encoding='utf-8') as sf:
-                  sf.write(reporte)
-
-          if errores:
+                  print(f"  - {err}")
               sys.exit(1)
+          else:
+              print("\n✅ ¡TODO IMPECABLE! Cero fotos rotas, cero sintaxis Liquid corrupta.")
           EOF
