@@ -1,629 +1,465 @@
 ---
+layout: default
 ---
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>{{ site.title | default: "Eficiencia & Norma" }} | Revista de Análisis Económico del Derecho</title>
-  <style>
-    /* VARIABLES DE DISEÑO & PALETA ACADÉMICA */
-    :root {
-      --serif: "Merriweather", "Georgia", "Times New Roman", serif;
-      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      --burgundy: #7b1113;
-      --burgundy-hover: #9c1518;
-      --ink: #111111;
-      --ink-light: #222222;
-      --muted: #5a5a5a;
-      --border-gray: #e2e2df;
-      --bg-cream: #fdfdfc;
-      --bg-card: #f8f8f6;
-      --shadow-subtle: 0 4px 14px rgba(0, 0, 0, 0.05);
-      --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.09);
-      --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
 
-    /* RESETEO UNIVERSAL ANTI-BUGS & SCROLL */
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<div class="newspaper-wrapper">
 
-    html {
-      scroll-behavior: smooth;
-      -webkit-text-size-adjust: 100%;
-    }
-
-    body {
-      width: 100%;
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 16px 18px 60px;
-      font-family: var(--serif);
-      color: var(--ink);
-      background-color: var(--bg-cream);
-      line-height: 1.65;
-      overflow-x: hidden; /* Elimina cualquier desplazamiento horizontal no deseado */
-    }
-
-    /* 1. BARRA SUPERIOR (TOP META) */
-    .top-meta {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      font-family: var(--sans);
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      border-bottom: 1px solid var(--border-gray);
-      padding-bottom: 8px;
-      color: var(--muted);
-    }
-
-    .convocatoria-badge {
-      background-color: var(--burgundy);
-      color: #ffffff !important;
-      padding: 6px 14px;
-      border-radius: 4px;
-      text-decoration: none;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      transition: var(--transition);
-      display: inline-block;
-    }
-
-    .convocatoria-badge:hover {
-      background-color: var(--burgundy-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 3px 8px rgba(123, 17, 19, 0.25);
-    }
-
-    /* 2. CABECERA EDITORIAL (MASTHEAD) */
-    .header-main {
-      text-align: center;
-      padding: 24px 0 16px;
-    }
-
-    .header-main h1 {
-      font-size: clamp(2.1rem, 6vw, 3.8rem); /* Escala fluida según el ancho del dispositivo */
-      font-weight: 900;
-      letter-spacing: -0.025em;
-      text-transform: uppercase;
-      line-height: 1.05;
-      color: var(--ink);
-    }
-
-    .header-main .subtitle {
-      font-style: italic;
-      font-size: clamp(0.95rem, 2.2vw, 1.2rem);
-      color: var(--muted);
-      margin-top: 10px;
-      line-height: 1.4;
-    }
-
-    /* 3. NAVEGACIÓN PRINCIPAL ADAPTABLE */
-    .nav-bar-container {
-      width: 100%;
-      border-top: 3px double #222;
-      border-bottom: 1px solid #222;
-      margin: 18px 0 32px;
-      overflow-x: auto; /* Permite deslizar horizontalmente en teléfonos sin descuadrar */
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-    }
-    .nav-bar-container::-webkit-scrollbar {
-      display: none;
-    }
-
-    .nav-bar {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 18px;
-      padding: 10px 4px;
-      font-family: var(--sans);
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      white-space: nowrap;
-    }
-
-    @media (max-width: 768px) {
-      .nav-bar {
-        justify-content: flex-start; /* En móvil permite deslizar con el pulgar */
-        gap: 16px;
-      }
-    }
-
-    .nav-bar a {
-      color: var(--ink);
-      text-decoration: none;
-      padding: 4px 6px;
-      border-radius: 3px;
-      transition: var(--transition);
-    }
-
-    .nav-bar a:hover {
-      color: var(--burgundy);
-      background-color: rgba(123, 17, 19, 0.05);
-    }
-
-    /* 4. GRILLA PRINCIPAL */
-    .main-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 36px;
-      margin-bottom: 45px;
-    }
-
-    @media (max-width: 860px) {
-      .main-grid {
-        grid-template-columns: 1fr;
-        gap: 32px;
-      }
-    }
-
-    /* ARTÍCULO DE PORTADA (LEAD) */
-    .lead-story {
-      border-right: 1px solid var(--border-gray);
-      padding-right: 32px;
-    }
-
-    @media (max-width: 860px) {
-      .lead-story {
-        border-right: none;
-        padding-right: 0;
-      }
-    }
-
-    .lead-badge {
-      display: inline-block;
-      font-family: var(--sans);
-      font-size: 0.75rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--burgundy);
-      margin-bottom: 8px;
-    }
-
-    .lead-story h2 {
-      font-size: clamp(1.6rem, 3.5vw, 2.3rem);
-      line-height: 1.22;
-      margin-bottom: 12px;
-    }
-
-    .lead-story a, .side-card a {
-      color: var(--ink);
-      text-decoration: none;
-      transition: var(--transition);
-    }
-
-    .lead-story a:hover, .side-card a:hover {
-      color: var(--burgundy);
-    }
-
-    .lead-meta {
-      font-family: var(--sans);
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 16px;
-    }
-
-    .takeaway-box {
-      background-color: var(--bg-card);
-      border-left: 4px solid var(--burgundy);
-      padding: 14px 18px;
-      margin: 18px 0;
-      font-family: var(--sans);
-      font-size: 0.92rem;
-      border-radius: 0 4px 4px 0;
-    }
-
-    .takeaway-box strong {
-      display: block;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      font-size: 0.76rem;
-      letter-spacing: 0.05em;
-      color: var(--burgundy);
-    }
-
-    .read-more-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--sans);
-      font-weight: 700;
-      color: var(--burgundy) !important;
-      text-decoration: none;
-      margin-top: 10px;
-      transition: var(--transition);
-    }
-
-    .read-more-link:hover {
-      transform: translateX(4px);
-    }
-
-    /* BARRA LATERAL (SIDEBAR) */
-    .sidebar h3 {
-      font-family: var(--sans);
-      text-transform: uppercase;
-      font-size: 0.82rem;
-      letter-spacing: 0.08em;
-      border-bottom: 2px solid #222;
-      padding-bottom: 6px;
-      margin-top: 0;
-    }
-
-    .side-card {
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border-gray);
-      transition: var(--transition);
-    }
-
-    .side-card:hover {
-      transform: translateY(-2px);
-    }
-
-    .side-card h4 {
-      font-size: 1.12rem;
-      margin: 6px 0;
-      line-height: 1.35;
-    }
-
-    .side-cta-box {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-gray);
-      border-top: 3px solid var(--burgundy);
-      padding: 20px;
-      border-radius: 4px;
-      text-align: center;
-      margin-top: 24px;
-    }
-
-    .side-cta-box h4 {
-      font-family: var(--sans);
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      margin-bottom: 8px;
-    }
-
-    .side-cta-box p {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 14px;
-    }
-
-    /* 5. SECCIÓN DESGLOSADA: LÍNEAS TEMÁTICAS */
-    .editorial-sections-block {
-      border-top: 2px solid #222;
-      padding-top: 36px;
-      margin-top: 30px;
-    }
-
-    .section-block-title {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .section-block-title h3 {
-      font-size: clamp(1.4rem, 3vw, 1.9rem);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-    }
-
-    .section-block-title p {
-      font-family: var(--sans);
-      font-size: 0.92rem;
-      color: var(--muted);
-    }
-
-    .sections-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-      gap: 22px;
-      margin-bottom: 45px;
-    }
-
-    .theme-card {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-gray);
-      border-top: 4px solid var(--burgundy);
-      padding: 22px 20px;
-      border-radius: 4px;
-      transition: var(--transition);
-      box-shadow: var(--shadow-subtle);
-    }
-
-    .theme-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-hover);
-      border-color: #d0d0cc;
-    }
-
-    .theme-card .scope {
-      font-family: var(--sans);
-      font-size: 0.75rem;
-      font-weight: 800;
-      color: var(--burgundy);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 8px;
-    }
-
-    .theme-card h4 {
-      margin-bottom: 10px;
-      font-size: 1.22rem;
-      line-height: 1.3;
-    }
-
-    .theme-card p {
-      font-size: 0.94rem;
-      color: #333;
-      margin-bottom: 12px;
-      line-height: 1.55;
-    }
-
-    .theme-card ul {
-      padding-left: 18px;
-      font-family: var(--sans);
-      font-size: 0.85rem;
-      color: #444;
-      line-height: 1.5;
-    }
-
-    /* 6. FORMULARIO RESPONSIVO (ANTI-DESBORDE) */
-    .form-wrapper {
-      background-color: #ffffff;
-      border: 1px solid var(--border-gray);
-      border-top: 5px solid var(--burgundy);
-      padding: clamp(20px, 4vw, 40px) clamp(14px, 3vw, 24px);
-      border-radius: 6px;
-      box-shadow: var(--shadow-subtle);
-      margin-top: 40px;
-      width: 100%;
-    }
-
-    .form-header {
-      text-align: center;
-      max-width: 760px;
-      margin: 0 auto 24px;
-    }
-
-    .form-header h3 {
-      font-size: clamp(1.5rem, 3.5vw, 2.1rem);
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      color: var(--burgundy);
-    }
-
-    .form-header p {
-      font-family: var(--sans);
-      font-size: 0.95rem;
-      color: #444;
-      line-height: 1.6;
-    }
-
-    .form-container {
-      position: relative;
-      width: 100%;
-      max-width: 760px;
-      margin: 0 auto;
-      overflow: hidden;
-      border-radius: 6px;
-      border: 1px solid var(--border-gray);
-      background-color: #fafafa;
-    }
-
-    .form-container iframe {
-      width: 100%;
-      height: 980px;
-      border: none;
-      display: block;
-    }
-
-    /* FOOTER */
-    footer {
-      margin-top: 60px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border-gray);
-      text-align: center;
-      font-family: var(--sans);
-      font-size: 0.82rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Barra Superior -->
-  <div class="top-meta">
-    <span>Facultad de Derecho — Universidad de Chile</span>
-    <a href="#convocatoria-seccion" class="convocatoria-badge">📢 Convocatoria Abierta: Postula al Equipo</a>
-    <span>Edición Digital 2026</span>
-  </div>
-
-  <!-- Cabecera Principal -->
-  <header class="header-main">
-    <h1>{{ site.title | default: "Eficiencia & Norma" }}</h1>
-    <div class="subtitle">Revista de Análisis Económico del Derecho, Mercados y Políticas Públicas</div>
+  <!-- CABECERA INSTITUCIONAL EDITORIAL -->
+  <header class="masthead">
+    <div class="masthead-top">
+      <span class="masthead-date" id="current-date">Edición Digital</span>
+      <span class="masthead-tagline">Libre Competencia · Regulación Económica · Políticas Públicas</span>
+    </div>
+    <div class="masthead-main">
+      <h1 class="newspaper-title">EFICIENCIA & NORMA</h1>
+      <p class="newspaper-subtitle">Análisis riguroso de mercados, sentencias y regulación económica</p>
+    </div>
+    <nav class="editorial-nav">
+      <span class="nav-item">Cárteles & Mercados</span>
+      <span class="nav-item">Banca & Fisco</span>
+      <span class="nav-item">Consumo & Litigios</span>
+      <span class="nav-item">Regulación Ambiental</span>
+    </nav>
   </header>
 
-  <!-- Navegación Responsiva con Scroll Táctil -->
-  <div class="nav-bar-container">
-    <nav class="nav-bar">
-      <a href="{{ '/' | relative_url }}">Portada</a>
-      <a href="#seccion-competencia">Cárteles & Mercados</a>
-      <a href="#seccion-banca">Banca & Fisco</a>
-      <a href="#seccion-consumo">Consumo & Litigios</a>
-      <a href="#seccion-ambiental">Regulación Ambiental</a>
-      <a href="#seccion-coyuntura">Coyuntura & Políticas</a>
-      <a href="#convocatoria-seccion" style="color: var(--burgundy);">Postular</a>
-    </nav>
-  </div>
-
-  <!-- Bloque Principal de Noticias -->
-  <main class="main-grid">
-    
-    <!-- Artículo Principal (Lead Story) -->
-    <section class="lead-story">
-      {% if site.posts.size > 0 %}
-        {% assign lead = site.posts.first %}
-        <article>
-          <span class="lead-badge">{{ lead.category | default: "Artículo de Fondo" }}</span>
-          <h2><a href="{{ lead.url | relative_url }}">{{ lead.title }}</a></h2>
-          <div class="lead-meta">
-            Por <strong>{{ lead.author }}</strong> | {{ lead.date | date: "%d/%m/%Y" }}
+  <!-- CONTENIDO EDITORIAL PRINCIPAL -->
+  <main class="news-container">
+    {% if site.posts.size > 0 %}
+      
+      <!-- ARTÍCULO PRINCIPAL / DESTACADO -->
+      {% assign lead_post = site.posts.first %}
+      <article class="featured-card">
+        <a href="{{ lead_post.url | relative_url }}" class="featured-link">
+          <div class="featured-grid">
+            <div class="featured-media">
+              {% if lead_post.image %}
+                <img src="{{ lead_post.image | relative_url }}" alt="{{ lead_post.title }}" loading="lazy">
+              {% else %}
+                <div class="fallback-banner">
+                  <span class="fallback-badge">ANÁLISIS EDITORIAL</span>
+                  <span class="fallback-icon">⚖️</span>
+                </div>
+              {% endif %}
+            </div>
+            <div class="featured-content">
+              <div class="meta-row">
+                <span class="badge-category">{{ lead_post.category | default: "Actualidad" }}</span>
+                <span class="post-date">📅 {{ lead_post.date | date: "%d/%m/%Y" }}</span>
+              </div>
+              <h2 class="featured-title">{{ lead_post.title }}</h2>
+              <p class="featured-excerpt">
+                {{ lead_post.excerpt | strip_html | truncatewords: 32 | default: "Haz clic para acceder al análisis completo y la descarga de documentación oficial." }}
+              </p>
+              <div class="author-row">
+                <span class="author-label">Por <strong>{{ lead_post.author | default: "Equipo Editorial" }}</strong></span>
+                <span class="read-more">Leer artículo completo →</span>
+              </div>
+            </div>
           </div>
-          
-          <div class="takeaway-box">
-            <strong>En síntesis</strong>
-            Análisis sobre la aplicación del estándar de prueba y los efectos de las fallas de mercado en la jurisprudencia económica reciente.
-          </div>
-
-          <p style="font-size: 1.05rem; color: #222;">
-            {{ lead.excerpt | strip_html | truncatewords: 50 }}
-          </p>
-          <p><a href="{{ lead.url | relative_url }}" class="read-more-link">Continuar leyendo el análisis completo →</a></p>
-        </article>
-      {% else %}
-        <p>No hay artículos publicados aún.</p>
-      {% endif %}
-    </section>
-
-    <!-- Barra Lateral -->
-    <aside class="sidebar">
-      <h3>Columnas & Comentarios</h3>
-      {% for post in site.posts offset:1 %}
-        <article class="side-card">
-          <span style="font-family: var(--sans); font-size: 0.72rem; font-weight: 800; color: var(--burgundy); text-transform: uppercase;">
-            {{ post.category | default: "Opinión" }}
-          </span>
-          <h4><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h4>
-          <p style="font-size: 0.88rem; color: #555; margin: 4px 0;">Por {{ post.author }}</p>
-        </article>
-      {% endfor %}
-
-      <div class="side-cta-box">
-        <h4>¿Quieres escribir en el diario?</h4>
-        <p>Buscamos redactores y colaboradores para todas las áreas temáticas del derecho económico.</p>
-        <a href="#convocatoria-seccion" class="convocatoria-badge">
-          Ir al Formulario
         </a>
-      </div>
-    </aside>
+      </article>
 
+      <!-- CUADRÍCULA DE ARTÍCULOS SECUNDARIOS Y COLUMNAS -->
+      {% if site.posts.size > 1 %}
+        <div class="section-divider">
+          <span>Últimas Columnas & Noticias</span>
+        </div>
+
+        <div class="articles-grid">
+          {% for post in site.posts offset:1 %}
+            <article class="grid-card">
+              <a href="{{ post.url | relative_url }}" class="card-link">
+                {% if post.image %}
+                  <div class="card-thumbnail">
+                    <img src="{{ post.image | relative_url }}" alt="{{ post.title }}" loading="lazy">
+                  </div>
+                {% endif %}
+                <div class="card-body">
+                  <div class="meta-row">
+                    <span class="badge-category-small">{{ post.category | default: "Columna" }}</span>
+                    <span class="post-date-small">{{ post.date | date: "%d/%m/%Y" }}</span>
+                  </div>
+                  <h3 class="card-title">{{ post.title }}</h3>
+                  <p class="card-excerpt">
+                    {{ post.excerpt | strip_html | truncatewords: 18 }}
+                  </p>
+                  <div class="card-footer">
+                    <span class="author-mini">{{ post.author | default: "Redacción" }}</span>
+                    <span class="read-arrow">→</span>
+                  </div>
+                </div>
+              </a>
+            </article>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+    {% else %}
+      <!-- ESTADO INICIAL CUANDO AÚN NO HAY POSTS -->
+      <div class="empty-state">
+        <div class="empty-icon">📰</div>
+        <h2>Edición en Preparación</h2>
+        <p>Los artículos subidos a la carpeta editorial se sincronizarán automáticamente aquí.</p>
+      </div>
+    {% endif %}
   </main>
 
-  <!-- SECCIÓN DESGLOSADA: LÍNEAS TEMÁTICAS -->
-  <section class="editorial-sections-block">
-    <div class="section-block-title">
-      <h3>Líneas Temáticas & Contenidos</h3>
-      <p>Áreas de investigación y publicación cubiertas por nuestro equipo editorial</p>
-    </div>
+</div>
 
-    <div class="sections-grid">
+<script>
+  // Poner fecha de hoy formateada en español en la cabecera
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  const today = new Date().toLocaleDateString('es-CL', options);
+  document.getElementById('current-date').textContent = today.charAt(0).toUpperCase() + today.slice(1);
+</script>
 
-      <!-- 1. Cárteles & Mercados -->
-      <article class="theme-card" id="seccion-competencia">
-        <div class="scope">Libre Competencia & Regulación de Monopolios</div>
-        <h4>1. Cárteles & Mercados</h4>
-        <p>Estudio de acuerdos colusorios, operaciones de concentración y abuso de posición dominante, combinando dogmática jurídica y modelos microeconómicos.</p>
-        <ul>
-          <li>Requerimientos de la FNE y sentencias del TDLC y Corte Suprema.</li>
-          <li>Regulación de monopolios naturales (gas, electricidad, sanitarias).</li>
-          <li>Algoritmos de precios y riesgos coordinados en mercados digitales.</li>
-        </ul>
-      </article>
+<style>
+  /* CONFIGURACIÓN Y PALETA INSTITUCIONAL */
+  :root {
+    --burgundy: #7b1113;
+    --burgundy-dark: #580c0d;
+    --burgundy-light: #fbf5f5;
+    --ink: #111111;
+    --ink-light: #444444;
+    --border-color: #e5e7eb;
+    --card-bg: #ffffff;
+    --page-bg: #f8f9fa;
+  }
 
-      <!-- 2. Banca & Fisco -->
-      <article class="theme-card" id="seccion-banca">
-        <div class="scope">Regulación Financiera, Bancaria & Tributaria</div>
-        <h4>2. Banca & Fisco</h4>
-        <p>Análisis del mercado de capitales, solvencia institucional y el diseño del sistema tributario como herramienta de financiamiento público y equidad.</p>
-        <ul>
-          <li>Normativas y fiscalización de la Comisión para el Mercado Financiero (CMF).</li>
-          <li>Crédito, tasa de interés máxima convencional y riesgo moral.</li>
-          <li>Norma General Antielusiva y reformas tributarias estructurales.</li>
-        </ul>
-      </article>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-      <!-- 3. Consumo & Litigios -->
-      <article class="theme-card" id="seccion-consumo">
-        <div class="scope">Derecho del Consumidor & Litigación Colectiva</div>
-        <h4>3. Consumo & Litigios</h4>
-        <p>Abordaje de asimetrías de información, fallas de contratación y mecanismos de tutela de los derechos de los consumidores en la economía digital.</p>
-        <ul>
-          <li>Acciones colectivas y acuerdos conciliatorios con el SERNAC.</li>
-          <li>Cláusulas abusivas en banca, seguros y retail.</li>
-          <li>Comercio electrónico, publicidad engañosa y protección de datos.</li>
-        </ul>
-      </article>
+  body {
+    background-color: var(--page-bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
 
-      <!-- 4. Regulación Ambiental -->
-      <article class="theme-card" id="seccion-ambiental">
-        <div class="scope">Derecho Ambiental & Externalidades</div>
-        <h4>4. Regulación Ambiental</h4>
-        <p>Evaluación de los costos sociales de la actividad productiva, instrumentos de gestión ambiental y el estándar jurisprudencial de Tribunales Ambientales.</p>
-        <ul>
-          <li>Sistema de Evaluación de Impacto Ambiental (SEIA) y permisos sectoriales.</li>
-          <li>Economía de las externalidades negativas y compensaciones ambientales.</li>
-          <li>Transición energética, descarbonización y regulación hídrica.</li>
-        </ul>
-      </article>
+  .newspaper-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+    animation: fadeIn 0.4s ease-out;
+  }
 
-      <!-- 5. Coyuntura & Políticas -->
-      <article class="theme-card" id="seccion-coyuntura">
-        <div class="scope">Microeconomía Aplicada & Debate Estudiantil</div>
-        <h4>5. Coyuntura & Políticas</h4>
-        <p>Espacio de debate ágil sobre proyectos de ley en trámite legislativo, políticas públicas y columnas de análisis crítico elaboradas por estudiantes y ayudantes.</p>
-        <ul>
-          <li>Seguimiento a proyectos de ley con impacto económico y regulatorio.</li>
-          <li>Debate teórico: fallas de mercado versus fallas del Estado.</li>
-          <li>Ensayos de opinión fundamentados sobre la contingencia nacional.</li>
-        </ul>
-      </article>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-    </div>
-  </section>
+  /* CABECERA (MASTHEAD) */
+  .masthead {
+    border-bottom: 3px double var(--burgundy);
+    padding-bottom: 12px;
+    margin-bottom: 32px;
+  }
 
-  <!-- SECCIÓN DE CONVOCATORIA (GOOGLE FORM RESPONSIVO) -->
-  <section class="form-wrapper" id="convocatoria-seccion">
-    <div class="form-header">
-      <h3>Convocatoria Oficial 2026</h3>
-      <p>
-        ¿Te apasiona el derecho económico, la libre competencia o la regulación de mercados? 
-        Completa el formulario oficial de postulación para unirte al equipo de redacción, 
-        columnistas o revisores de <strong>Eficiencia & Norma</strong>.
-      </p>
-      <p style="margin-top: 14px;">
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSemT82GuGUG1TGBITMqvlMK-ASBM09jZC4p4QEif_Bolx-7mg/viewform" target="_blank" class="convocatoria-badge">
-          Abrir Formulario en Pantalla Completa ↗
-        </a>
-      </p>
-    </div>
+  .masthead-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #666;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 6px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 
-    <!-- Iframe con Contenedor Elástico Anti-Bugs -->
-    <div class="form-container">
-      <iframe src="[suspicious link removed]" loading="lazy">
-        Cargando formulario de postulación…
-      </iframe>
-    </div>
-  </section>
+  .masthead-main {
+    text-align: center;
+    padding: 10px 0 16px;
+  }
 
-  <!-- Pie de Página -->
-  <footer>
-    <p><strong>Eficiencia & Norma</strong> — Dirección y Edición General: Victor Ignacio Huaiquian Rebolledo</p>
-    <p>Facultad de Derecho — Universidad de Chile</p>
-  </footer>
+  .newspaper-title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    color: var(--burgundy);
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
 
-</body>
-</html>
+  .newspaper-subtitle {
+    font-size: 1rem;
+    color: var(--ink-light);
+    font-style: italic;
+  }
+
+  .editorial-nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 10px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-light);
+    flex-wrap: wrap;
+  }
+
+  .nav-item {
+    transition: color 0.2s;
+  }
+  .nav-item:hover { color: var(--burgundy); cursor: default; }
+
+  /* ARTÍCULO DESTACADO (FEATURED) */
+  .featured-card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    border: 1px solid var(--border-color);
+    margin-bottom: 36px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .featured-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(123, 17, 19, 0.12);
+  }
+
+  .featured-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+  }
+
+  .featured-media {
+    position: relative;
+    min-height: 280px;
+    background: var(--burgundy-dark);
+  }
+
+  .featured-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .fallback-banner {
+    width: 100%;
+    height: 100%;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--burgundy-dark) 0%, var(--burgundy) 100%);
+    color: #fff;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .fallback-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    border: 1px solid rgba(255,255,255,0.4);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
+
+  .fallback-icon { font-size: 3rem; }
+
+  .featured-content {
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .badge-category {
+    background: var(--burgundy);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .post-date { font-size: 0.8rem; color: #777; }
+
+  .featured-title {
+    font-family: Georgia, serif;
+    font-size: 1.8rem;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 12px;
+    font-weight: 800;
+  }
+
+  .featured-excerpt {
+    font-size: 0.95rem;
+    color: var(--ink-light);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .author-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.85rem;
+  }
+
+  .read-more {
+    color: var(--burgundy);
+    font-weight: 700;
+  }
+
+  /* DIVISOR DE SECCIÓN */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    margin: 40px 0 24px;
+  }
+
+  .section-divider::before,
+  .section-divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .section-divider span {
+    padding: 0 16px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--burgundy);
+  }
+
+  /* GRILLA DE ARTÍCULOS */
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 24px;
+  }
+
+  .grid-card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .grid-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  }
+
+  .card-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .card-thumbnail {
+    height: 170px;
+    overflow: hidden;
+    background: #eaeaea;
+  }
+
+  .card-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .card-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .badge-category-small {
+    background: var(--burgundy-light);
+    color: var(--burgundy);
+    border: 1px solid rgba(123, 17, 19, 0.2);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+
+  .post-date-small { font-size: 0.75rem; color: #888; }
+
+  .card-title {
+    font-family: Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.35;
+    margin: 10px 0;
+    color: var(--ink);
+  }
+
+  .card-excerpt {
+    font-size: 0.88rem;
+    color: #666;
+    margin-bottom: 16px;
+    flex: 1;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 10px;
+    font-size: 0.82rem;
+    color: #555;
+  }
+
+  .read-arrow {
+    color: var(--burgundy);
+    font-weight: 700;
+  }
+
+  /* ESTADO VACÍO */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    border: 1px dashed var(--border-color);
+  }
+  .empty-icon { font-size: 3rem; margin-bottom: 10px; }
+
+  /* RESPONSIVIDAD PARA MÓVILES (TELÉFONOS Y PANTALLAS PEQUEÑAS) */
+  @media (max-width: 768px) {
+    .newspaper-title { font-size: 2.1rem; }
+    .masthead-top { flex-direction: column; align-items: center; gap: 4px; }
+    .featured-grid { grid-template-columns: 1fr; }
+    .featured-media { min-height: 200px; }
+    .featured-title { font-size: 1.45rem; }
+    .articles-grid { grid-template-columns: 1fr; }
+  }
+</style>
