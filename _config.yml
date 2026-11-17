@@ -1,4 +1,8 @@
 title: "Eficiencia & Norma"
-description: "Diario Digital de Libre Competencia, Regulación y Políticas Públicas"
-baseurl: "/Eficiencia-Norma-"
-url: "https://victorhr2.github.io"
+description: "Diario de regulación económica, libre competencia y políticas públicas"
+baseurl: "/Eficiencia-Norma-" # O déjalo vacío "" si renombraste el repositorio a .github.io
+url: "https://[tu-organizacion].github.io"
+
+# Opciones de compilación limpia
+markdown: kramdown
+permalink: /:year/:month/:day/:title/
