@@ -32,3 +32,6 @@ collections:
         }
       - { label: "Foto Destacada", name: "image", widget: "image", required: false }
       - { label: "Contenido del Artículo", name: "body", widget: "markdown" }
+
+      include:
+  - admin/config.yml
