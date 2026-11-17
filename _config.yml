@@ -1,9 +1,4 @@
 title: "Eficiencia & Norma"
-tagline: "Revista de Análisis Económico del Derecho y Regulación de Mercados"
-description: "Publicación académica estudiantil dedicada al estudio de la libre competencia, regulación de monopolios y políticas públicas."
-url: "https://tu-usuario.github.io"
-baseurl: "/el-diario" # Cámbialo por el nombre exacto de tu repositorio si es distinto
-
-# Datos editoriales
-institution: "Facultad de Derecho | Universidad de Chile"
-editor_in_chief: "Victor Ignacio Huaiquian Rebolledo"
+description: "Diario Digital de Libre Competencia, Regulación y Políticas Públicas"
+baseurl: "/Eficiencia-Norma-"
+url: "https://victorhr2.github.io"
