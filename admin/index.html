@@ -4,11 +4,60 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel Editorial | Eficiencia & Norma</title>
-  <!-- Ruta directa a tu configuración -->
-  <link rel="cms-config-url" type="text/yaml" href="config.yml" />
+
+  <!-- CONFIGURACIÓN DIRECTA INCRUSTADA (Cero errores de lectura) -->
+  <script>
+    window.CMS_MANUAL_INIT = true;
+  </script>
+
   <!-- Motor Sveltia CMS -->
   <script src="[suspicious link removed]"></script>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      CMS.init({
+        config: {
+          backend: {
+            name: 'github',
+            repo: 'victorhr2/Eficiencia-Norma-',
+            branch: 'main'
+          },
+          media_folder: 'assets/img',
+          public_folder: '/assets/img',
+          collections: [
+            {
+              name: 'articulos',
+              label: 'Artículos & Columnas',
+              folder: '_posts',
+              create: true,
+              slug: '{{year}}-{{month}}-{{day}}-{{slug}}',
+              fields: [
+                { label: 'Diseño', name: 'layout', widget: 'hidden', default: 'post' },
+                { label: 'Título del Artículo', name: 'title', widget: 'string' },
+                { label: 'Autor(a)', name: 'author', widget: 'string' },
+                { label: 'Fecha', name: 'date', widget: 'datetime', format: 'YYYY-MM-DD' },
+                {
+                  label: 'Sección Editorial',
+                  name: 'category',
+                  widget: 'select',
+                  options: [
+                    'Cárteles & Mercados',
+                    'Banca & Fisco',
+                    'Consumo & Litigios',
+                    'Regulación Ambiental',
+                    'Coyuntura & Políticas'
+                  ]
+                },
+                { label: 'Foto Destacada', name: 'image', widget: 'image', required: false },
+                { label: 'Contenido del Artículo', name: 'body', widget: 'markdown' }
+              ]
+            }
+          ]
+        }
+      });
+    });
+  </script>
 </head>
-<body>
+<body style="margin: 0; background-color: #f4f5f7;">
 </body>
 </html>
