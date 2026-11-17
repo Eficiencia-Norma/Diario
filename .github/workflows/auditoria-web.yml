@@ -1,4 +1,4 @@
-name: Bot Guardián - Auditoría de Errores y Web
+name: Auditor Senior de Calidad Web
 
 on:
   push:
@@ -8,89 +8,125 @@ on:
   workflow_dispatch:
 
 jobs:
-  auditar_sitio:
-    name: Inspección de Enlaces, Fotos y Sintaxis
+  auditoria_integral:
+    name: Inspección QA de Imágenes, Sintaxis y Enlaces
     runs-on: ubuntu-latest
 
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Configurar Ruby para compilar Jekyll
-        uses: ruby/setup-ruby@v1
+      - name: Configurar Entorno Python
+        uses: actions/setup-python@v5
         with:
-          ruby-version: '3.1'
-          bundler-cache: true
+          python-version: '3.11'
 
-      - name: Instalar Jekyll y herramientas de auditoría
-        run: |
-          gem install jekyll html-proofer
-
-      - name: Compilar sitio web en entorno de prueba
-        run: |
-          bundle exec jekyll build --trace
-        env:
-          JEKYLL_ENV: production
-
-      - name: Bot Auditor de Imágenes, Enlaces y Código
+      - name: Ejecutar Auditor Senior
         run: |
           python3 - << 'EOF'
           import os
           import re
           import sys
 
-          site_dir = "_site"
+          print("🛡️ [QA SENIOR]: Iniciando auditoría integral de Eficiencia & Norma...")
+
           errores = []
           advertencias = []
+          archivos_auditados = 0
 
-          print("🔍 [INSPECTOR WEB]: Iniciando escaneo profundo de la web...")
+          # 1. Auditoría de Peso y Formato de Imágenes
+          if os.path.exists("assets/img"):
+              for root, _, files in os.walk("assets/img"):
+                  for file in files:
+                      fpath = os.path.join(root, file)
+                      size_mb = os.path.getsize(fpath) / (1024 * 1024)
+                      if size_mb > 2.5:
+                          advertencias.append(f"⚠️ **Imagen muy pesada:** `{fpath}` ({size_mb:.2f} MB). Podría ralentizar la carga en teléfonos móviles.")
+                      ext = os.path.splitext(file)[1].lower()
+                      if ext not in ['.jpg', '.jpeg', '.png', '.webp', '.svg', '.gif']:
+                          advertencias.append(f"⚠️ **Formato no óptimo:** `{fpath}` tiene extensión `{ext}`.")
 
-          # 1. Verificar peso de imágenes en assets/
-          for root, _, files in os.walk("assets/img"):
-              for file in files:
-                  fpath = os.path.join(root, file)
-                  size_mb = os.path.getsize(fpath) / (1024 * 1024)
-                  if size_mb > 3.0:
-                      advertencias.append(f"⚠️ Imagen pesada detectada: '{fpath}' ({size_mb:.2f} MB). Podría ralentizar la carga en celulares.")
+          # 2. Recorrer archivos de contenido y plantillas
+          rutas_inspeccionar = ["index.html", "_layouts", "_includes", "_posts"]
 
-          # 2. Verificar que cada imagen referenciada en el HTML realmente exista
-          for root, _, files in os.walk(site_dir):
-              for file in files:
-                  if file.endswith(".html"):
-                      html_path = os.path.join(root, file)
-                      with open(html_path, "r", encoding="utf-8", errors="ignore") as f:
-                          content = f.read()
+          for ruta in rutas_inspeccionar:
+              if not os.path.exists(ruta):
+                  continue
+              
+              if os.path.isfile(ruta):
+                  archivos = [ruta]
+              else:
+                  archivos = [os.path.join(root, f) for root, _, fs in os.walk(ruta) for f in fs if f.endswith(('.html', '.md'))]
 
-                      # Buscar rutas de imágenes src="..."
-                      img_srcs = re.findall(r'<img[^>]+src=["\']([^"\']+)["\']', content)
-                      for src in img_srcs:
-                          # Ignorar enlaces externos completos (http/https) o emojis
-                          if src.startswith("http://") or src.startswith("https://") or src.startswith("data:"):
-                              continue
-                          
-                          # Limpiar rutas relativas con baseurl
-                          clean_src = src.split("?")[0].split("#")[0]
-                          clean_src = clean_src.replace("/Eficiencia-Norma-/", "").lstrip("/")
-                          local_target = os.path.join(site_dir, clean_src)
+              for filepath in archivos:
+                  archivos_auditados += 1
+                  with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+                      lineas = f.readlines()
 
-                          if not os.path.exists(local_target):
-                              errores.append(f"❌ FOTO ROTA: En '{file}' la imagen '{src}' no existe en el servidor.")
+                  contenido = "".join(lineas)
 
-                      # 3. Detectar etiquetas rotas o texto crudo sin procesar
-                      if re.search(r'(\{%|\{\{)', content):
-                          errores.append(f"❌ CÓDIGO CRUDAJE: Se detectaron etiquetas Liquid sin compilar en '{file}'.")
+                  # A) Detectar etiquetas Liquid rotas (llaves desbalanceadas)
+                  total_if = len(re.findall(r'\{%\s*if\b', contenido))
+                  total_endif = len(re.findall(r'\{%\s*endif\s*%\}', contenido))
+                  if total_if != total_endif:
+                      errores.append(f"❌ **Error Liquid en `{filepath}`:** Tienes {total_if} `{% if %}` y {total_endif} `{% endif %}`. Etiqueta sin cerrar.")
 
-          print("\n--- REPORTE FINAL DEL BOT GUARDIÁN ---")
+                  # B) Validar que cada imagen referenciada exista realmente
+                  # Markdown: ![alt](url)
+                  md_imgs = re.findall(r'!\\[.*?\\]\\((.*?)\\)', contenido)
+                  # HTML: <img src="url">
+                  html_imgs = re.findall(r'<img[^>]+src=["\']([^"\']+)["\']', contenido)
+
+                  todas_imgs = md_imgs + html_imgs
+
+                  for img in todas_imgs:
+                      # Ignorar imágenes externas con http/https o base64
+                      if img.startswith(('http://', 'https://', 'data:')):
+                          continue
+
+                      # Limpiar etiquetas baseurl de Liquid
+                      clean_img = re.sub(r'\{\{\s*site\.baseurl\s*\}\}', '', img)
+                      clean_img = clean_img.replace('/Eficiencia-Norma-/', '').strip().lstrip('/')
+                      clean_img = clean_img.split('?')[0].split('#')[0]
+
+                      if clean_img and not clean_img.startswith('{{'):
+                          # Verificar si el archivo existe en disco
+                          if not os.path.exists(clean_img):
+                              errores.append(f"❌ **Foto rota en `{filepath}`:** No se encuentra el archivo `{clean_img}` en el repositorio.")
+
+                  # C) Validar que los enlaces internos a convocatorias existan
+                  if 'href="#convocatoria-seccion"' in contenido:
+                      if 'id="convocatoria-seccion"' not in contenido and not os.path.exists("index.html"):
+                          advertencias.append(f"⚠️ **Enlace huérfano en `{filepath}`:** Hace referencia a `#convocatoria-seccion` pero no se detectó el id.")
+
+          # Generar Resumen Ejecutivo en GitHub Actions
+          summary_file = os.environ.get('GITHUB_STEP_SUMMARY')
+          reporte = f"## 📋 Reporte del Auditor Senior de Eficiencia & Norma\n\n"
+          reporte += f"- **Archivos analizados:** `{archivos_auditados}`\n"
+          reporte += f"- **Errores críticos:** `{len(errores)}`\n"
+          reporte += f"- **Advertencias de rendimiento:** `{len(advertencias)}`\n\n"
+
           if advertencias:
+              reporte += "### ⚠️ Observaciones y Recomendaciones:\n"
               for adv in advertencias:
-                  print(adv)
+                  reporte += f"- {adv}\n"
+              reporte += "\n"
 
           if errores:
-              print("\n🚨 SE DETECTARON ERRORES CRÍTICOS QUE DEBEN CORREGIRSE:")
+              reporte += "### 🚨 Errores Críticos que Requieren Atención:\n"
+              for err in errores:
+                  reporte += f"- {err}\n"
+              print("\n🚨 Se detectaron fallas críticas de integridad:")
               for err in errores:
                   print(err)
-              # Salir con error para alertar en la pestaña Actions
-              sys.exit(1)
           else:
-              print("✅ [TODO PERFECTO]: No hay fotos rotas, enlaces huérfanos ni errores de plantilla.")
+              reporte += "### ✅ ¡Sitio Web en Estado Óptimo!\nNo se encontraron fotos caídas, errores de plantilla ni código roto.\n"
+              print("\n✅ Auditoría finalizada con éxito: Cero errores críticos.")
+
+          if summary_file:
+              with open(summary_file, 'a', encoding='utf-8') as sf:
+                  sf.write(reporte)
+
+          if errores:
+              sys.exit(1)
           EOF
