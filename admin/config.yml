@@ -1,27 +1,34 @@
 backend:
   name: github
   repo: victorhr2/Eficiencia-Norma-
-  branch: main # o master si tu rama se llama master
+  branch: main
 
+# Dónde se guardan las fotos automáticamente
 media_folder: "assets/img"
 public_folder: "/assets/img"
 
 collections:
   - name: "articulos"
-    label: "Artículos"
+    label: "Artículos & Columnas"
     folder: "_posts"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - { label: "Diseño", name: "layout", widget: "hidden", default: "post" }
-      - { label: "Título", name: "title", widget: "string" }
-      - { label: "Autor", name: "author", widget: "string" }
+      - { label: "Título del Artículo", name: "title", widget: "string" }
+      - { label: "Autor(a)", name: "author", widget: "string" }
       - { label: "Fecha", name: "date", widget: "datetime", format: "YYYY-MM-DD" }
       - { 
-          label: "Sección", 
+          label: "Sección Editorial", 
           name: "category", 
           widget: "select", 
-          options: ["Cárteles & Mercados", "Banca & Fisco", "Consumo & Litigios", "Regulación Ambiental", "Coyuntura & Políticas"] 
+          options: [
+            "Cárteles & Mercados", 
+            "Banca & Fisco", 
+            "Consumo & Litigios", 
+            "Regulación Ambiental", 
+            "Coyuntura & Políticas"
+          ] 
         }
       - { label: "Foto Destacada", name: "image", widget: "image", required: false }
-      - { label: "Cuerpo", name: "body", widget: "markdown" }
+      - { label: "Contenido del Artículo", name: "body", widget: "markdown" }
