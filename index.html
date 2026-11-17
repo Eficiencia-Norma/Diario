@@ -1,14 +1,458 @@
---
-layout: default
 ---
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eficiencia &amp; Norma | Diario de Regulación y Mercados</title>
+  <meta name="description" content="Análisis riguroso de libre competencia, sentencias TDLC y políticas públicas en Chile.">
+  <style>
+    :root {
+      --ink: #111111;
+      --ink-subtle: #3a3a3a;
+      --ink-muted: #737373;
+      --burgundy: #8b1517;
+      --burgundy-dark: #630c0e;
+      --line: #dedede;
+      --line-subtle: #eaeaea;
+      --bg-page: #ffffff;
+      --bg-tint: #f8f8f8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .edition-wrapper {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 16px 60px;
+    }
+
+    /* MASTHEAD */
+    .masthead {
+      border-bottom: 2px solid var(--ink);
+      padding-top: 14px;
+      margin-bottom: 28px;
+    }
+
+    .masthead-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 6px;
+      letter-spacing: 0.08em;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .masthead-branding {
+      text-align: center;
+      padding: 22px 0 14px;
+    }
+
+    .brand-name {
+      font-family: "Times New Roman", Times, Georgia, serif;
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: var(--burgundy);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .brand-baseline {
+      font-family: Georgia, serif;
+      font-size: 0.95rem;
+      color: var(--ink-subtle);
+      font-style: italic;
+    }
+
+    .masthead-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      border-top: 1px solid var(--line);
+      padding: 10px 0;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      transition: color 0.15s ease;
+    }
+
+    .nav-link:hover { color: var(--burgundy); }
+    .nav-link-special { color: var(--burgundy); border-bottom: 1px solid var(--burgundy); }
+
+    /* ARTÍCULO PRINCIPAL */
+    .lead-story {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 32px;
+      margin-bottom: 32px;
+    }
+
+    .lead-link { text-decoration: none; color: inherit; display: block; }
+
+    .lead-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .rubric {
+      display: inline-block;
+      color: var(--burgundy);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .lead-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      line-height: 1.18;
+      color: var(--ink);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .lead-title:hover { color: var(--burgundy); }
+
+    .lead-standfirst {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--ink-subtle);
+      margin-bottom: 18px;
+    }
+
+    .lead-byline {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+      border-top: 1px solid var(--line-subtle);
+      padding-top: 12px;
+    }
+
+    .byline-author { font-weight: 700; color: var(--ink); }
+    .byline-action { color: var(--burgundy); font-weight: 700; text-transform: uppercase; margin-left: auto; }
+
+    .lead-media {
+      background-color: var(--bg-tint);
+      min-height: 260px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .lead-media img {
+      width: 100%;
+      height: 100%;
+      min-height: 260px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .lead-media-placeholder {
+      min-height: 260px;
+      background: #1a1a1a;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      text-align: center;
+      border-top: 4px solid var(--burgundy);
+    }
+
+    .placeholder-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      color: var(--burgundy);
+      background: #ffffff;
+      padding: 3px 8px;
+      margin-bottom: 12px;
+    }
+
+    .placeholder-caption {
+      font-family: Georgia, serif;
+      font-size: 0.95rem;
+      color: #cccccc;
+    }
+
+    /* EDICIÓN CONTINUA (GRILLA) */
+    .grid-header {
+      border-bottom: 1px solid var(--ink);
+      margin-bottom: 22px;
+      padding-bottom: 4px;
+    }
+
+    .grid-header-label {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: var(--ink);
+    }
+
+    .columns-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 26px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 36px;
+      margin-bottom: 36px;
+    }
+
+    .column-card {
+      border-right: 1px solid var(--line-subtle);
+      padding-right: 20px;
+    }
+
+    .column-card:last-child { border-right: none; padding-right: 0; }
+    .column-link { text-decoration: none; color: inherit; display: flex; flex-direction: column; height: 100%; }
+
+    .column-media {
+      height: 150px;
+      background: var(--bg-tint);
+      border: 1px solid var(--line-subtle);
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .column-media img { width: 100%; height: 100%; object-fit: cover; }
+
+    .column-rubric {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--burgundy);
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+
+    .column-title {
+      font-family: Georgia, serif;
+      font-size: 1.18rem;
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .column-excerpt {
+      font-size: 0.88rem;
+      color: var(--ink-subtle);
+      line-height: 1.5;
+      margin-bottom: 14px;
+      flex: 1;
+    }
+
+    .column-byline {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.74rem;
+      color: var(--ink-muted);
+      border-top: 1px solid var(--line-subtle);
+      padding-top: 8px;
+    }
+
+    /* COMITÉ EDITORIAL */
+    .editorial-board { margin-bottom: 46px; }
+
+    .section-rule {
+      border-bottom: 1px solid var(--ink);
+      padding-bottom: 4px;
+      margin-bottom: 20px;
+    }
+
+    .rule-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: var(--ink);
+    }
+
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .board-member {
+      border-top: 2px solid var(--burgundy);
+      padding-top: 12px;
+    }
+
+    .member-division {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--burgundy);
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+    }
+
+    .member-name {
+      font-family: Georgia, serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .member-brief {
+      font-size: 0.85rem;
+      color: var(--ink-subtle);
+      line-height: 1.45;
+    }
+
+    /* CONVOCATORIA */
+    .notice-call { margin-bottom: 30px; }
+
+    .call-container {
+      background-color: var(--bg-tint);
+      border-top: 4px solid var(--burgundy);
+      border-bottom: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      padding: 28px;
+    }
+
+    .call-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .call-badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: var(--burgundy);
+    }
+
+    .call-quota {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      background: var(--ink);
+      color: #ffffff;
+      padding: 3px 8px;
+    }
+
+    .call-heading {
+      font-family: Georgia, serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1.25;
+      margin-bottom: 12px;
+    }
+
+    .call-statement {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--ink-subtle);
+      margin-bottom: 20px;
+      max-width: 860px;
+    }
+
+    .call-specs {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 0;
+      margin-bottom: 22px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .spec-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--ink);
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+    }
+
+    .spec-detail {
+      font-size: 0.82rem;
+      color: var(--ink-subtle);
+      line-height: 1.4;
+    }
+
+    .call-footer {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-formal {
+      display: inline-block;
+      background-color: var(--burgundy);
+      color: #ffffff !important;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 12px 20px;
+      transition: background-color 0.15s ease;
+    }
+
+    .btn-formal:hover { background-color: var(--burgundy-dark); }
+    .call-subtext { font-size: 0.76rem; color: var(--ink-muted); }
+
+    .standby-notice {
+      text-align: center;
+      padding: 40px 16px;
+      border: 1px solid var(--line);
+      background: var(--bg-tint);
+    }
+
+    /* MÓVILES */
+    @media (max-width: 768px) {
+      .lead-grid { grid-template-columns: 1fr; gap: 18px; }
+      .column-card { border-right: none; border-bottom: 1px solid var(--line-subtle); padding-right: 0; padding-bottom: 18px; }
+      .call-container { padding: 20px 16px; }
+      .btn-formal { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
 
 <div class="edition-wrapper">
 
-  <!-- CABECERA PRINCIPAL (MASTHEAD) -->
+  <!-- CABECERA -->
   <header class="masthead">
     <div class="masthead-meta">
       <span class="meta-date" id="live-date">Edición Digital</span>
-      <span class="meta-edition">DIARIO DE REGULACIÓN, MERCADOS Y DERECHO ECONÓMICO</span>
+      <span class="meta-edition">REGULACIÓN, MERCADOS Y DERECHO ECONÓMICO</span>
       <span class="meta-country">CHILE</span>
     </div>
 
@@ -18,7 +462,7 @@ layout: default
     </div>
 
     <nav class="masthead-nav">
-      <a href="#actualidad" class="nav-link">Libre Competencia</a>
+      <a href="#mercados" class="nav-link">Libre Competencia</a>
       <a href="#regulacion" class="nav-link">Mercados Regulados</a>
       <a href="#jurisprudencia" class="nav-link">Sentencias TDLC</a>
       <a href="#equipo-editorial" class="nav-link">Comité Editorial</a>
@@ -26,11 +470,11 @@ layout: default
     </nav>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL DE PORTADA -->
+  <!-- CONTENIDO -->
   <main class="content-body">
     {% if site.posts.size > 0 %}
       
-      <!-- ARTÍCULO PRINCIPAL (LEAD STORY) -->
+      <!-- NOTICIA DESTACADA -->
       {% assign lead_post = site.posts.first %}
       <section class="lead-story">
         <a href="{{ lead_post.url | relative_url }}" class="lead-link">
@@ -39,12 +483,12 @@ layout: default
               <span class="rubric">{{ lead_post.category | default: "ANÁLISIS DE MERCADOS" | upcase }}</span>
               <h2 class="lead-title">{{ lead_post.title }}</h2>
               <p class="lead-standfirst">
-                {{ lead_post.excerpt | strip_html | truncatewords: 34 | default: "Revisión técnica de los principales antecedentes regulatorios, fundamentos económicos y alcance jurídico del caso analizado." }}
+                {{ lead_post.excerpt | strip_html | truncatewords: 32 | default: "Revisión técnica de los principales antecedentes regulatorios, fundamentos económicos y alcance jurídico del caso analizado." }}
               </p>
               <div class="lead-byline">
                 <span class="byline-author">Por {{ lead_post.author | default: "Redacción Eficiencia & Norma" }}</span>
-                <span class="byline-date">{{ lead_post.date | date: "%d de %B de %Y" }}</span>
-                <span class="byline-action">Texto completo</span>
+                <span class="byline-date">{{ lead_post.date | date: "%d/%m/%Y" }}</span>
+                <span class="byline-action">Leer análisis completo</span>
               </div>
             </div>
 
@@ -62,7 +506,7 @@ layout: default
         </a>
       </section>
 
-      <!-- ARTÍCULOS SECUNDARIOS (GRILLA EDITORIAL) -->
+      <!-- ARTÍCULOS SECUNDARIOS -->
       {% if site.posts.size > 1 %}
         <div class="grid-header">
           <span class="grid-header-label">EDICIÓN CONTINUA</span>
@@ -101,7 +545,7 @@ layout: default
       </div>
     {% endif %}
 
-    <!-- SECCIÓN: COMITÉ EDITORIAL -->
+    <!-- COMITÉ EDITORIAL -->
     <section id="equipo-editorial" class="editorial-board">
       <div class="section-rule">
         <span class="rule-title">COMITÉ &amp; EQUIPO EDITORIAL</span>
@@ -128,7 +572,7 @@ layout: default
       </div>
     </section>
 
-    <!-- SECCIÓN: CONVOCATORIA (5 CUPOS) -->
+    <!-- CONVOCATORIA -->
     <section id="convocatoria-seccion" class="notice-call">
       <div class="call-container">
         <div class="call-top">
@@ -145,7 +589,7 @@ layout: default
         <div class="call-specs">
           <div class="spec-block">
             <span class="spec-label">Requisitos:</span>
-            <span class="spec-detail">Estudiantes de último año o graduados de Derecho o Economía con interés en libre competencia y regulación.</span>
+            <span class="spec-detail">Estudiantes o graduados de Derecho o Economía con interés en libre competencia y regulación.</span>
           </div>
           <div class="spec-block">
             <span class="spec-label">Modalidad:</span>
@@ -170,503 +614,11 @@ layout: default
 </div>
 
 <script>
-  // Fecha formal en castellano
   const fecha = new Date();
   const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const fechaStr = fecha.toLocaleDateString('es-CL', opciones);
   document.getElementById('live-date').textContent = fechaStr.charAt(0).toUpperCase() + fechaStr.slice(1);
 </script>
 
-<style>
-  /* TIPOGRAFÍA Y PALETA INSTITUCIONAL THE ECONOMIST / EL DINAMO */
-  :root {
-    --ink: #111111;
-    --ink-subtle: #4a4a4a;
-    --ink-muted: #737373;
-    --burgundy: #8b1517;
-    --burgundy-dark: #630c0e;
-    --line: #dedede;
-    --line-subtle: #eaeaea;
-    --bg-page: #ffffff;
-    --bg-tint: #f7f7f7;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background-color: var(--bg-page);
-    color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    line-height: 1.5;
-  }
-
-  .edition-wrapper {
-    max-width: 1140px;
-    margin: 0 auto;
-    padding: 0 20px 60px;
-  }
-
-  /* MASTHEAD */
-  .masthead {
-    border-bottom: 2px solid var(--ink);
-    padding-top: 16px;
-    margin-bottom: 30px;
-  }
-
-  .masthead-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--ink-muted);
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 6px;
-    letter-spacing: 0.08em;
-  }
-
-  .masthead-branding {
-    text-align: center;
-    padding: 24px 0 16px;
-  }
-
-  .brand-name {
-    font-family: "Times New Roman", Times, Georgia, serif;
-    font-size: 3.4rem;
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    color: var(--burgundy);
-    line-height: 1;
-    margin-bottom: 6px;
-  }
-
-  .brand-baseline {
-    font-family: Georgia, serif;
-    font-size: 0.95rem;
-    color: var(--ink-subtle);
-    font-style: italic;
-    letter-spacing: 0.01em;
-  }
-
-  .masthead-nav {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 28px;
-    border-top: 1px solid var(--line);
-    padding: 10px 0;
-    flex-wrap: wrap;
-  }
-
-  .nav-link {
-    text-decoration: none;
-    color: var(--ink);
-    font-size: 0.78rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    transition: color 0.15s ease;
-  }
-
-  .nav-link:hover {
-    color: var(--burgundy);
-  }
-
-  .nav-link-special {
-    color: var(--burgundy);
-    border-bottom: 1px solid var(--burgundy);
-  }
-
-  /* ARTÍCULO PRINCIPAL */
-  .lead-story {
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 36px;
-    margin-bottom: 36px;
-  }
-
-  .lead-link {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-  }
-
-  .lead-grid {
-    display: grid;
-    grid-template-columns: 1.15fr 1fr;
-    gap: 36px;
-    align-items: center;
-  }
-
-  .rubric {
-    display: inline-block;
-    color: var(--burgundy);
-    font-size: 0.76rem;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    margin-bottom: 10px;
-  }
-
-  .lead-title {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 2.3rem;
-    line-height: 1.18;
-    color: var(--ink);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    margin-bottom: 14px;
-  }
-
-  .lead-title:hover {
-    color: var(--burgundy);
-  }
-
-  .lead-standfirst {
-    font-size: 1.05rem;
-    line-height: 1.6;
-    color: var(--ink-subtle);
-    margin-bottom: 22px;
-  }
-
-  .lead-byline {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    font-size: 0.78rem;
-    color: var(--ink-muted);
-    border-top: 1px solid var(--line-subtle);
-    padding-top: 14px;
-  }
-
-  .byline-author {
-    font-weight: 700;
-    color: var(--ink);
-  }
-
-  .byline-action {
-    color: var(--burgundy);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-left: auto;
-  }
-
-  .lead-media {
-    background-color: var(--bg-tint);
-    min-height: 290px;
-    border: 1px solid var(--line);
-    overflow: hidden;
-  }
-
-  .lead-media img {
-    width: 100%;
-    height: 100%;
-    min-height: 290px;
-    object-fit: cover;
-    display: block;
-  }
-
-  .lead-media-placeholder {
-    min-height: 290px;
-    background: #1a1a1a;
-    color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 30px;
-    text-align: center;
-    border-top: 4px solid var(--burgundy);
-  }
-
-  .placeholder-tag {
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.15em;
-    color: var(--burgundy);
-    background: #ffffff;
-    padding: 4px 10px;
-    margin-bottom: 14px;
-  }
-
-  .placeholder-caption {
-    font-family: Georgia, serif;
-    font-size: 1rem;
-    letter-spacing: 0.05em;
-    color: #cccccc;
-  }
-
-  /* SECCIÓN EDICIÓN CONTINUA (GRILLA) */
-  .grid-header {
-    border-bottom: 1px solid var(--ink);
-    margin-bottom: 24px;
-    padding-bottom: 4px;
-  }
-
-  .grid-header-label {
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    color: var(--ink);
-  }
-
-  .columns-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 40px;
-    margin-bottom: 40px;
-  }
-
-  .column-card {
-    border-right: 1px solid var(--line-subtle);
-    padding-right: 24px;
-  }
-
-  .column-card:last-child {
-    border-right: none;
-    padding-right: 0;
-  }
-
-  .column-link {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-
-  .column-media {
-    height: 160px;
-    background: var(--bg-tint);
-    border: 1px solid var(--line-subtle);
-    overflow: hidden;
-    margin-bottom: 12px;
-  }
-
-  .column-media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .column-rubric {
-    font-size: 0.7rem;
-    font-weight: 800;
-    color: var(--burgundy);
-    letter-spacing: 0.08em;
-    margin-bottom: 6px;
-  }
-
-  .column-title {
-    font-family: Georgia, serif;
-    font-size: 1.22rem;
-    font-weight: 700;
-    line-height: 1.3;
-    color: var(--ink);
-    margin-bottom: 10px;
-  }
-
-  .column-title:hover {
-    color: var(--burgundy);
-  }
-
-  .column-excerpt {
-    font-size: 0.9rem;
-    color: var(--ink-subtle);
-    line-height: 1.55;
-    margin-bottom: 16px;
-    flex: 1;
-  }
-
-  .column-byline {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.75rem;
-    color: var(--ink-muted);
-    border-top: 1px solid var(--line-subtle);
-    padding-top: 10px;
-  }
-
-  /* COMITÉ EDITORIAL */
-  .editorial-board {
-    margin-bottom: 50px;
-  }
-
-  .section-rule {
-    border-bottom: 1px solid var(--ink);
-    padding-bottom: 4px;
-    margin-bottom: 24px;
-  }
-
-  .rule-title {
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    color: var(--ink);
-  }
-
-  .board-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 28px;
-  }
-
-  .board-member {
-    border-top: 2px solid var(--burgundy);
-    padding-top: 14px;
-  }
-
-  .member-division {
-    display: block;
-    font-size: 0.68rem;
-    font-weight: 800;
-    color: var(--burgundy);
-    letter-spacing: 0.1em;
-    margin-bottom: 6px;
-  }
-
-  .member-name {
-    font-family: Georgia, serif;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--ink);
-    margin-bottom: 6px;
-  }
-
-  .member-brief {
-    font-size: 0.88rem;
-    color: var(--ink-subtle);
-    line-height: 1.5;
-  }
-
-  /* CONVOCATORIA (FORMATO BOLETÍN INSTITUCIONAL) */
-  .notice-call {
-    margin-bottom: 40px;
-  }
-
-  .call-container {
-    background-color: var(--bg-tint);
-    border-top: 4px solid var(--burgundy);
-    border-bottom: 1px solid var(--line);
-    border-left: 1px solid var(--line);
-    border-right: 1px solid var(--line);
-    padding: 32px 36px;
-  }
-
-  .call-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-  }
-
-  .call-badge {
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    color: var(--burgundy);
-  }
-
-  .call-quota {
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    background: var(--ink);
-    color: #ffffff;
-    padding: 3px 8px;
-  }
-
-  .call-heading {
-    font-family: Georgia, serif;
-    font-size: 1.75rem;
-    font-weight: 800;
-    color: var(--ink);
-    line-height: 1.25;
-    margin-bottom: 14px;
-    letter-spacing: -0.01em;
-  }
-
-  .call-statement {
-    font-size: 0.98rem;
-    line-height: 1.6;
-    color: var(--ink-subtle);
-    margin-bottom: 24px;
-    max-width: 860px;
-  }
-
-  .call-specs {
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    padding: 16px 0;
-    margin-bottom: 26px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-
-  .spec-label {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: var(--ink);
-    letter-spacing: 0.05em;
-    margin-bottom: 4px;
-  }
-
-  .spec-detail {
-    font-size: 0.85rem;
-    color: var(--ink-subtle);
-    line-height: 1.45;
-  }
-
-  .call-footer {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-
-  .btn-formal {
-    display: inline-block;
-    background-color: var(--burgundy);
-    color: #ffffff !important;
-    text-decoration: none;
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 12px 22px;
-    transition: background-color 0.15s ease;
-  }
-
-  .btn-formal:hover {
-    background-color: var(--burgundy-dark);
-  }
-
-  .call-subtext {
-    font-size: 0.78rem;
-    color: var(--ink-muted);
-  }
-
-  .standby-notice {
-    text-align: center;
-    padding: 50px 20px;
-    border: 1px solid var(--line);
-    background: var(--bg-tint);
-  }
-
-  /* RESPONSIVIDAD PARA CELULARES */
-  @media (max-width: 820px) {
-    .brand-name { font-size: 2.4rem; }
-    .masthead-meta { flex-direction: column; gap: 4px; text-align: center; }
-    .lead-grid { grid-template-columns: 1fr; gap: 20px; }
-    .lead-title { font-size: 1.65rem; }
-    .columns-grid { grid-template-columns: 1fr; gap: 24px; }
-    .column-card { border-right: none; border-bottom: 1px solid var(--line-subtle); padding-right: 0; padding-bottom: 20px; }
-    .board-grid { grid-template-columns: 1fr; gap: 20px; }
-    .call-specs { grid-template-columns: 1fr; gap: 14px; }
-    .call-container { padding: 22px 18px; }
-    .btn-formal { width: 100%; text-align: center; }
-  }
-</style>
+</body>
+</html>
