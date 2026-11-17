@@ -1,4 +1,4 @@
-name: Publicador Universal Optimizado
+name: Publicador Editorial con Auditor de Calidad
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  procesar_documentos:
+  auditar_y_publicar:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -16,13 +16,13 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Configurar Python y herramientas del sistema
+      - name: Instalar librerías de conversión y ortografía
         run: |
           sudo apt-get update
           sudo apt-get install -y pandoc poppler-utils
-          pip install python-docx pypdf pillow
+          pip install python-docx pypdf pillow pyspellchecker
 
-      - name: Procesador Editorial Blindado (Limpia códigos y conecta imágenes)
+      - name: Bot Auditor de Calidad y Procesador
         run: |
           python3 - << 'EOF'
           import os
@@ -30,6 +30,13 @@ jobs:
           import shutil
           import subprocess
           from datetime import date
+          from spellchecker import SpellChecker
+
+          # Inicializar corrector en español
+          spell = SpellChecker(language='es')
+          # Palabras técnicas habituales de libre competencia para no marcarlas como error
+          terminos_legales = {'tdlc', 'fne', 'cencosud', 'cartel', 'carteles', 'colusion', 'post', 'markdown', 'docx', 'pdf', 'online', 'ranking', 'lead'}
+          spell.word_frequency.load_words(terminos_legales)
 
           borradores_dir = "_borradores"
           posts_dir = "_posts"
@@ -42,18 +49,18 @@ jobs:
 
           today_str = date.today().strftime("%Y-%m-%d")
 
-          if not os.path.exists(borradores_dir):
-              print("No existe _borradores")
-              exit(0)
-
           archivos = [f for f in os.listdir(borradores_dir) if os.path.isfile(os.path.join(borradores_dir, f)) and not f.endswith(('.txt', '.gitkeep', 'LEEME'))]
 
+          if not archivos:
+              print("No hay borradores nuevos para auditar.")
+              exit(0)
+
           for filename in archivos:
+              print(f"--- Auditando documento: {filename} ---")
               filepath = os.path.join(borradores_dir, filename)
               base_name, ext = os.path.splitext(filename)
               ext = ext.lower().replace('.', '')
 
-              # Crear slug limpio
               clean_slug = re.sub(r'[^a-zA-Z0-9]+', '-', base_name.lower()).strip('-')
               clean_title = base_name.replace('-', ' ').replace('_', ' ').strip().title()
 
@@ -64,72 +71,47 @@ jobs:
 
               cuerpo_markdown = ""
 
-              # CASO 1: DOCX (Google Docs o Word con fotos adentro)
+              # 1. Extracción según formato
               if ext == "docx":
                   media_temp = os.path.join("/tmp", f"media_{clean_slug}")
                   os.makedirs(media_temp, exist_ok=True)
-                  # Extraer texto limpio a markdown sin basuras
-                  cmd = [
-                      "pandoc", filepath,
-                      "-f", "docx",
-                      "-t", "gfm-raw_html",  # Elimina HTML roto
-                      f"--extract-media={media_temp}",
-                      "--wrap=none"
-                  ]
+                  cmd = ["pandoc", filepath, "-f", "docx", "-t", "gfm-raw_html", f"--extract-media={media_temp}", "--wrap=none"]
                   res = subprocess.run(cmd, capture_output=True, text=True)
                   cuerpo_markdown = res.stdout
 
-                  # Mover imágenes extraídas y reescribir rutas
+                  # Extraer y conectar imágenes
                   extracted_folder = os.path.join(media_temp, "media")
                   if os.path.exists(extracted_folder):
                       for img_file in os.listdir(extracted_folder):
-                          src = os.path.join(extracted_folder, img_file)
-                          dst = os.path.join(article_img_dir, img_file)
-                          shutil.copy2(src, dst)
-
-                  # Normalizar rutas de imágenes en el texto
+                          shutil.copy2(os.path.join(extracted_folder, img_file), os.path.join(article_img_dir, img_file))
+                  
                   cuerpo_markdown = re.sub(
                       r'!\\[(.*?)\\]\\([^)]*media/([^)]+)\\)',
                       rf'![\1]({{{{ site.baseurl }}}}/assets/img/{clean_slug}/\2)',
                       cuerpo_markdown
                   )
 
-              # CASO 2: PDF
               elif ext == "pdf":
-                  # Guardar copia del PDF original para descarga
-                  pdf_dest = os.path.join(docs_base_dir, f"{today_str}-{clean_slug}.pdf")
-                  shutil.copy2(filepath, pdf_dest)
-
-                  # Extraer imágenes del PDF
+                  shutil.copy2(filepath, os.path.join(docs_base_dir, f"{today_str}-{clean_slug}.pdf"))
                   subprocess.run(["pdfimages", "-png", filepath, os.path.join(article_img_dir, "img")], capture_output=True)
-
-                  # Extraer texto plano
                   txt_res = subprocess.run(["pdftotext", "-layout", filepath, "-"], capture_output=True, text=True)
-                  raw_text = txt_res.stdout
-
-                  # Limpiar caracteres raros y saltos repetidos
-                  cleaned_lines = []
-                  for line in raw_text.splitlines():
-                      l = line.strip()
-                      # Ignorar numeración de pie de página suelta o basura binaria
-                      if re.match(r'^(Página\s+\d+|\d+)$', l):
-                          continue
-                      cleaned_lines.append(l)
-
-                  cuerpo_markdown = "\n\n".join([p for p in "\n".join(cleaned_lines).split("\n\n") if p.strip()])
-
-                  # Agregar botón de descarga estilizado
+                  raw_lines = [l.strip() for l in txt_res.stdout.splitlines() if not re.match(r'^(Página\s+\d+|\d+)$', l.strip())]
+                  cuerpo_markdown = "\n\n".join([p for p in "\n".join(raw_lines).split("\n\n") if p.strip()])
                   cuerpo_markdown += f"\n\n---\n\n> 📥 **[Descargar documento original en PDF]({{{{ site.baseurl }}}}/assets/docs/{today_str}-{clean_slug}.pdf)**\n"
 
-              # CASO 3: ARCHIVOS DE TEXTO PLANO
-              elif ext in ["md", "txt"]:
-                  with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
-                      cuerpo_markdown = f.read()
-
-              # Filtrar códigos o etiquetas no deseadas
+              # 2. FILTRO ANTI-CÓDIGO BASURA (Limpia caracteres de control y XML roto)
               cuerpo_markdown = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', cuerpo_markdown)
+              cuerpo_markdown = re.sub(r'<\/?(span|div|font|style|o:p)[^>]*>', '', cuerpo_markdown)
 
-              # Construir cabecera Front Matter impecable
+              # 3. AUDITORÍA ORTOGRÁFICA PREVENTIVA
+              palabras = re.findall(r'\b[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]{4,}\b', cuerpo_markdown.lower())
+              desconocidas = spell.unknown(palabras)
+              if desconocidas:
+                  print(f"⚠️ [AVISO DE CALIDAD]: Se detectaron {len(desconocidas)} palabras dudosas o posibles erratas: {list(desconocidas)[:8]}")
+              else:
+                  print("✅ [CONTROL ORTOGRÁFICO]: Documento sin errores ortográficos comunes detectados.")
+
+              # 4. Inyección de Front Matter Editorial
               front_matter = f"""---
 layout: post
 title: "{clean_title}"
@@ -142,14 +124,13 @@ category: "Coyuntura & Regulación"
               with open(post_path, "w", encoding="utf-8") as f:
                   f.write(front_matter + cuerpo_markdown.strip() + "\n")
 
-              # Eliminar borrador ya procesado
               os.remove(filepath)
-              print(f"Procesado exitosamente: {filename} -> {post_filename}")
+              print(f"✅ Publicación completada con éxito: {post_filename}")
           EOF
 
-      - name: Confirmar y publicar cambios
+      - name: Publicar cambios limpios
         run: |
           git config --global user.name "Bot Eficiencia & Norma"
           git config --global user.email "bot@eficiencia-norma.cl"
           git add _posts/ assets/ _borradores/
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto: Publicación optimizada con limpieza de texto e imágenes" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto: Publicación auditada y depurada" && git push)
