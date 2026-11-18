@@ -5,8 +5,7 @@ author: "Víctor Ignacio Huaiquian Rebolledo"
 date: 2026-11-18
 category: "Jurisprudencia TDLC"
 reading_time: "3 min de lectura"
-excerpt: "JURISPRUDENCIA TDLC & LIBRE COMPETENCIA  
-Por: Víctor Ignacio Huaiquian Rebolledo \| Redacción Eficiencia & Norma"
+excerpt: "Evaluación sustantiva de presiones al alza de precios, barreras de entrada y condicionamientos conductuales ante la FNE."
 image: "/Diario/assets/img/muestra-articulo-concentracion-hhi/image1.png"
 ---
 
