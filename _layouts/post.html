@@ -34,7 +34,7 @@
       padding: 0 20px 80px;
     }
 
-    /* BARRA SUPERIOR INSTITUCIONAL */
+    /* BARRA SUPERIOR */
     .top-bar {
       border-bottom: 2px solid var(--ink);
       padding: 16px 0 12px;
@@ -110,7 +110,7 @@
 
     .byline-author strong { color: var(--ink); }
 
-    /* CUERPO DEL ARTÍCULO */
+    /* CUERPO DEL TEXTO */
     .article-content {
       font-family: Georgia, "Times New Roman", serif;
       font-size: 1.15rem;
@@ -188,7 +188,7 @@
       font-style: italic;
     }
 
-    /* CITAS DESTACADAS (PULL QUOTES) */
+    /* PULL QUOTE */
     .pull-quote {
       margin: 36px 0;
       padding: 24px 20px;
@@ -204,6 +204,8 @@
       color: var(--ink);
       font-style: italic;
       margin-bottom: 8px;
+      border: none;
+      padding: 0;
     }
 
     .pull-quote figcaption {
@@ -214,7 +216,49 @@
       color: var(--burgundy);
     }
 
-    /* CIERRE INSTITUCIONAL */
+    /* VIDEOS */
+    .editorial-video-container {
+      margin: 36px 0;
+      border: 1px solid var(--line);
+      background: #000000;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .editorial-video-container video,
+    .editorial-video-container iframe {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      display: block;
+      border: none;
+    }
+
+    .media-caption {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+      padding: 8px 12px;
+      background: var(--bg-tint);
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .caption-label {
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--burgundy);
+      font-size: 0.72rem;
+    }
+
+    .caption-credit {
+      font-style: italic;
+      color: #666666;
+    }
+
+    /* CIERRE */
     .article-footer {
       margin-top: 60px;
       border-top: 2px solid var(--ink);
@@ -265,317 +309,16 @@
       .article-content { font-size: 1.05rem; }
       .byline-bar { flex-direction: column; gap: 4px; }
     }
-  /* REPRODUCTOR DE MINIVIDEOS EDITORIALES */
-.editorial-video-container {
-  margin: 36px 0;
-  border: 1px solid var(--line);
-  background: #000000;
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.editorial-video-container video,
-.editorial-video-container iframe {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  display: block;
-  border: none;
-}
-
-.media-caption {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 0.8rem;
-  color: var(--ink-muted);
-  padding: 8px 12px;
-  background: var(--bg-tint);
-  border-top: 1px solid var(--line);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.caption-label {
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--burgundy);
-  font-size: 0.72rem;
-}
-
-.caption-credit {
-  font-style: italic;
-  color: #666666;
-}
-
-/* GRILLA DE FOTOGRAFÍAS / FOTOPERIODISMO */
-.editorial-gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-  margin: 36px 0;
-}
-
-.gallery-item {
-  border: 1px solid var(--line);
-  background: var(--bg-tint);
-  overflow: hidden;
-}
-
-.gallery-item img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  display: block;
-}
-
-.gallery-item figcaption {
-  font-size: 0.78rem;
-  color: var(--ink-subtle);
-  padding: 8px 10px;
-  line-height: 1.4;
-  border-top: 1px solid var(--line-subtle);
-}
-2. Actualizar el bot en procesar_publicaciones.py
-Vamos a dotar al bot de la capacidad de:
-Detectar si en _borradores/ subes un archivo de video (.mp4, .webm) junto a la nota.
-Moverlo a la carpeta web assets/video/[slug]/.
-Incrustar automáticamente el reproductor de video HTML5 en el artículo.
-Detectar enlaces de entrevistas en YouTube o Vimeo si vienen en el texto y convertirlos en reproductores limpios.
-Abre procesar_publicaciones.py en GitHub y actualízalo con esta lógica reforzada:
-import os
-import re
-import shutil
-import subprocess
-from datetime import date
-
-def clasificar_disciplina(texto):
-    t = texto.lower()
-    if any(k in t for k in ['tdlc', 'tribunal de defensa', 'sentencia tdlc', 'requerimiento fne']):
-        return "Jurisprudencia TDLC"
-    elif any(k in t for k in ['colusión', 'colusion', 'cártel', 'cartel', 'fne', 'libre competencia', 'concentración']):
-        return "Libre Competencia"
-    elif any(k in t for k in ['cmf', 'superintendencia', 'mercado financiero', 'tarifas', 'banca', 'servicios básicos']):
-        return "Mercados Regulados"
-    elif any(k in t for k in ['medio ambiente', 'sea', 'constitucional', 'política pública', 'proyecto de ley']):
-        return "Políticas Públicas"
-    return "Análisis Económico & Mercados"
-
-def identificar_firma(texto):
-    patron = re.search(r'(?:por|autor|análisis de|redacción de)[:\s]+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){1,3})', texto, re.IGNORECASE)
-    if patron:
-        return patron.group(1).strip()
-    return "Redacción Eficiencia & Norma"
-
-def generar_extracto(texto):
-    parrafos = [p.strip() for p in texto.split("\n\n") if p.strip() and not p.startswith(('#', '!', '<', '>'))]
-    if parrafos:
-        primer_bloque = re.sub(r'[*_`]', '', parrafos[0])
-        palabras = primer_bloque.split()
-        if len(palabras) > 30:
-            return " ".join(palabras[:30]) + "..."
-        return primer_bloque
-    return "Análisis técnico de los principales fundamentos normativos, económicos y alcance regulatorio del caso."
-
-def main():
-    print("Iniciando Asistente Editorial Multimedia...")
-
-    borradores_dir = "_borradores"
-    posts_dir = "_posts"
-    img_base_dir = "assets/img"
-    video_base_dir = "assets/video"
-
-    os.makedirs(posts_dir, exist_ok=True)
-    os.makedirs(img_base_dir, exist_ok=True)
-    os.makedirs(video_base_dir, exist_ok=True)
-
-    today_str = date.today().strftime("%Y-%m-%d")
-
-    if not os.path.exists(borradores_dir):
-        return
-
-    archivos_todos = os.listdir(borradores_dir)
-    archivos_texto = [
-        f for f in archivos_todos
-        if os.path.isfile(os.path.join(borradores_dir, f))
-        and not f.startswith('.')
-        and f.lower().endswith(('.docx', '.pdf', '.md', '.txt'))
-    ]
-
-    archivos_video = [
-        f for f in archivos_todos
-        if os.path.isfile(os.path.join(borradores_dir, f))
-        and f.lower().endswith(('.mp4', '.webm'))
-    ]
-
-    if not archivos_texto:
-        print("No hay documentos de texto para publicar.")
-        return
-
-    for filename in archivos_texto:
-        filepath = os.path.join(borradores_dir, filename)
-        base_name, ext = os.path.splitext(filename)
-        ext = ext.lower().replace('.', '')
-
-        clean_slug = re.sub(r'[^a-zA-Z0-9]+', '-', base_name.lower()).strip('-')
-        if not clean_slug:
-            clean_slug = "analisis-editorial"
-        clean_title = base_name.replace('-', ' ').replace('_', ' ').strip().title()
-
-        post_filename = f"{today_str}-{clean_slug}.md"
-        post_path = os.path.join(posts_dir, post_filename)
-        article_img_dir = os.path.join(img_base_dir, clean_slug)
-        article_video_dir = os.path.join(video_base_dir, clean_slug)
-        os.makedirs(article_img_dir, exist_ok=True)
-        os.makedirs(article_video_dir, exist_ok=True)
-
-        # 1. MOVER VIDEOS ASOCIADOS (Si hay videos en borradores con nombre similar o genéricos)
-        bloque_videos_html = []
-        for vid in archivos_video:
-            origen_vid = os.path.join(borradores_dir, vid)
-            destino_vid = os.path.join(article_video_dir, vid)
-            shutil.move(origen_vid, destino_vid)
-            
-            vid_url = f"/Diario/assets/video/{clean_slug}/{vid}"
-            bloque_videos_html.append(f"""
-<div class="editorial-video-container">
-  <video controls preload="metadata">
-    <source src="{vid_url}" type="video/mp4">
-    Tu navegador no soporta reproducción de video.
-  </video>
-  <div class="media-caption">
-    <span class="caption-label">Cápsula / Entrevista Audiovisual</span>
-    <span class="caption-credit">Registro de Sesión</span>
-  </div>
-</div>
-""")
-
-        raw_markdown = ""
-        imagenes_extraidas = []
-
-        # 2. EXTRACCIÓN DE CONTENIDO Y FOTOS
-        if ext == "docx":
-            media_temp = os.path.join("/tmp", f"media_{clean_slug}")
-            os.makedirs(media_temp, exist_ok=True)
-
-            cmd = ["pandoc", filepath, "-f", "docx", "-t", "gfm-raw_html", f"--extract-media={media_temp}", "--wrap=none"]
-            res = subprocess.run(cmd, capture_output=True, text=True)
-            raw_markdown = res.stdout
-
-            extracted_folder = os.path.join(media_temp, "media")
-            if os.path.exists(extracted_folder):
-                for img_file in sorted(os.listdir(extracted_folder)):
-                    shutil.copy2(os.path.join(extracted_folder, img_file), os.path.join(article_img_dir, img_file))
-                    imagenes_extraidas.append(img_file)
-
-            # Inyectar figuras con formato formal
-            raw_markdown = re.sub(
-                r'!\\[(.*?)\\]\\((?:.*?media/)?([^)]+)\\)',
-                rf'\n\n<figure class="editorial-media"><img src="/Diario/assets/img/{clean_slug}/\2" alt="\1" loading="lazy"><figcaption>\1</figcaption></figure>\n\n',
-                raw_markdown
-            )
-
-        elif ext == "pdf":
-            subprocess.run(["pdfimages", "-png", filepath, os.path.join(article_img_dir, "figura")], capture_output=True)
-            txt_res = subprocess.run(["pdftotext", "-layout", filepath, "-"], capture_output=True, text=True)
-            raw_lines = [l.strip() for l in txt_res.stdout.splitlines() if not re.match(r'^(Página\s+\d+|\d+)$', l.strip())]
-            raw_markdown = "\n\n".join([p for p in "\n".join(raw_lines).split("\n\n") if p.strip()])
-
-            pdf_imgs = sorted([f for f in os.listdir(article_img_dir) if f.startswith("figura")])
-            if pdf_imgs:
-                imagenes_extraidas = pdf_imgs
-                figuras_html = "\n\n".join([
-                    f'<figure class="editorial-media"><img src="/Diario/assets/img/{clean_slug}/{img}" alt="Registro documental" loading="lazy"><figcaption>Evidencia o gráfico anexo al análisis</figcaption></figure>'
-                    for img in pdf_imgs
-                ])
-                raw_markdown = figuras_html + "\n\n" + raw_markdown
-
-        else:
-            with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
-                raw_markdown = f.read()
-
-        # Inyectar videos al inicio del análisis si existen
-        if bloque_videos_html:
-            raw_markdown = "\n\n".join(bloque_videos_html) + "\n\n" + raw_markdown
-
-        # 3. DETECTAR VIDEOS DE YOUTUBE EN EL TEXTO Y CONVERTIRLOS EN REPRODUCTORES
-        raw_markdown = re.sub(
-            r'https?://(?:www\.)?youtube\.com/watch\?v=([a-zA-Z0-9_-]+)',
-            r'<div class="editorial-video-container"><iframe src="[suspicious link removed]" allowfullscreen></iframe><div class="media-caption"><span class="caption-label">Cápsula Informativa</span><span class="caption-credit">Cobertura Audiovisual</span></div></div>',
-            raw_markdown
-        )
-
-        # 4. HIGIENE Y MAQUETACIÓN THE ECONOMIST
-        raw_markdown = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', raw_markdown)
-        raw_markdown = re.sub(r'<\/?(span|font|o:p)[^>]*>', '', raw_markdown)
-
-        categoria = clasificar_disciplina(raw_markdown)
-        autor = identificar_firma(raw_markdown)
-        resumen = generar_extracto(raw_markdown)
-        total_palabras = len(re.findall(r'\b\w+\b', raw_markdown))
-        tiempo_lectura = max(1, round(total_palabras / 200))
-
-        imagen_portada = ""
-        if imagenes_extraidas:
-            imagen_portada = f"/Diario/assets/img/{clean_slug}/{imagenes_extraidas[0]}"
-
-        parrafos = [p.strip() for p in raw_markdown.split("\n\n") if p.strip()]
-        cuerpo_final = []
-        dropcap_listo = False
-
-        for idx, p in enumerate(parrafos):
-            if idx == 0 and len(p.split()) > 15 and not p.startswith(('#', '!', '<')):
-                cuerpo_final.append(f'<p class="editorial-standfirst">{p}</p>')
-                continue
-
-            if not dropcap_listo and not p.startswith(('#', '!', '<', '>', '|', '-')):
-                m = re.match(r'^([^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]*)([a-zA-ZáéíóúüñÁÉÍÓÚÜÑ])(.*)$', p, re.DOTALL)
-                if m:
-                    pref, letra, resto = m.groups()
-                    p = f'{pref}<span class="drop-cap">{letra}</span>{resto}'
-                    dropcap_listo = True
-
-            if p.startswith('>'):
-                cita = re.sub(r'^>\s*', '', p, flags=re.MULTILINE)
-                p = f'<figure class="pull-quote"><blockquote>"{cita}"</blockquote><figcaption>— Referencia del Pronunciamiento</figcaption></figure>'
-
-            cuerpo_final.append(p)
-
-        contenido_maquetado = "\n\n".join(cuerpo_final)
-
-        front_matter = f"""---
-layout: post
-title: "{clean_title}"
-author: "{autor}"
-date: {today_str}
-category: "{categoria}"
-reading_time: "{tiempo_lectura} min de lectura"
-excerpt: "{resumen}"
-"""
-        if imagen_portada:
-            front_matter += f'image: "{imagen_portada}"\n'
-        front_matter += "---\n\n"
-
-        with open(post_path, "w", encoding="utf-8") as f:
-            f.write(front_matter + contenido_maquetado + "\n")
-
-        os.remove(filepath)
-        print(f"✔ Publicación completada con soporte multimedia: {post_filename}")
-
-if __name__ == "__main__":
-    main()
   </style>
 </head>
 <body>
 
 <div class="reader-wrapper">
-
-  <!-- BARRA DE NAVEGACIÓN -->
   <header class="top-bar">
     <a href="/Diario/" class="brand-link">EFICIENCIA &amp; NORMA</a>
     <a href="/Diario/" class="back-nav">← Portada Principal</a>
   </header>
 
-  <!-- CABECERA DE NOTICIA -->
   <article>
     <header class="article-header">
       <span class="meta-rubric">{{ page.category | default: "ANÁLISIS DE MERCADOS" | upcase }}</span>
@@ -589,12 +332,10 @@ if __name__ == "__main__":
       </div>
     </header>
 
-    <!-- CONTENIDO COMPLETO Y GRÁFICOS -->
     <div class="article-content">
       {{ content }}
     </div>
 
-    <!-- PIE DEL ARTÍCULO -->
     <footer class="article-footer">
       <div class="footer-box">
         <h3 class="footer-brand">EFICIENCIA &amp; NORMA</h3>
@@ -605,7 +346,6 @@ if __name__ == "__main__":
       </div>
     </footer>
   </article>
-
 </div>
 
 </body>
