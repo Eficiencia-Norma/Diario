@@ -446,7 +446,60 @@ raw_markdown = re.sub(
   margin-top: 32px;
   margin-bottom: 12px;
 }
-    
+/* TABLAS DE PRENSA */
+.article-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 32px 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.9rem;
+  border: 1px solid var(--line);
+}
+
+.article-content th {
+  background-color: var(--burgundy);
+  color: #ffffff;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.article-content td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line-subtle);
+  color: var(--ink-subtle);
+}
+
+.article-content tr:nth-child(even) td {
+  background-color: var(--bg-tint);
+}
+
+/* FIGURAS E IMÁGENES CENTRADAS */
+.article-content figure,
+.article-content .editorial-media {
+  margin: 36px auto;
+  text-align: center;
+  max-width: 100%;
+}
+
+.article-content img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.article-content figcaption {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  margin-top: 8px;
+  font-style: italic;
+}
   </style>
 </head>
 <body>
