@@ -309,6 +309,60 @@
       .article-content { font-size: 1.05rem; }
       .byline-bar { flex-direction: column; gap: 4px; }
     }
+  /* TRATAMIENTO EDITORIAL DE IMÁGENES Y GRÁFICOS */
+.editorial-media {
+  margin: 40px auto;
+  max-width: 100%;
+  text-align: center;
+  background: #fbfbfb;
+  border: 1px solid #e5e5e5;
+  padding: 12px;
+  border-radius: 2px;
+}
+
+.editorial-media img {
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* PIE DE FOTO / CRÉDITO FORMAL */
+.editorial-media figcaption {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.82rem;
+  color: #555555;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+  text-align: left;
+  line-height: 1.45;
+}
+
+.editorial-media figcaption strong {
+  color: #8b1517; /* El burdeo del diario */
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  display: inline-block;
+  margin-right: 6px;
+}
+2. ¿Cómo lo maneja el Bot automáticamente en procesar_publicaciones.py?
+Cuando un redactor de tu equipo sube un .docx con fotos o gráficos a _borradores/, pandoc extrae esas imágenes a una carpeta temporal. Para que el bot las monte con el diseño formal arriba descrito, la clave en tu script es esta transformación inteligente:
+# Cuando pandoc extrae las imágenes del Word, el bot las envuelve en la estructura editorial:
+raw_markdown = re.sub(
+    r'!\\[(.*?)\\]\\((?:.*?media/)?([^)]+)\\)',
+    rf'''
+<figure class="editorial-media">
+  <img src="/Diario/assets/img/{clean_slug}/\2" alt="\1" loading="lazy">
+  <figcaption><strong>Figura / Registro:</strong> \1</figcaption>
+</figure>
+''',
+    raw_markdown
+)
   </style>
 </head>
 <body>
