@@ -42,11 +42,14 @@ jobs:
                       size_mb = os.path.getsize(fpath) / (1024 * 1024)
                       if size_mb > 3.0:
                           advertencias.append(f"⚠️ Imagen pesada: '{fpath}' ({size_mb:.2f} MB).")
-                      ext = os.path.splitext(file).lower()
+                      
+                      # Corrección de la tupla: tomar el índice [1] para la extensión
+                      _, ext = os.path.splitext(file)
+                      ext = ext.lower()
                       if ext not in ['.jpg', '.jpeg', '.png', '.webp', '.svg', '.gif']:
                           advertencias.append(f"⚠️ Formato no estándar: '{fpath}' con extensión '{ext}'.")
 
-          # 2. Rutas a inspeccionar: solo contenido real (excluyendo plantillas maestras para evitar falsos positivos)
+          # 2. Rutas a inspeccionar: solo contenido publicado para evitar falsos positivos
           rutas_inspeccionar = ["index.html", "_posts"]
 
           patron_if = re.compile(r'\{%\s*if\b')
@@ -84,7 +87,7 @@ jobs:
 
                       # Limpieza de prefijo de repositorio
                       clean_img = img.replace('/Diario/', '').replace('Diario/', '').lstrip('/')
-                      clean_img = clean_img.split('?').split('#')
+                      clean_img = clean_img.split('?').split('#')[0]
 
                       if clean_img:
                           if not os.path.exists(clean_img):
