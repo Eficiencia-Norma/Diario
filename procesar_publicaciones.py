@@ -4,7 +4,6 @@ import shutil
 import subprocess
 from datetime import date
 
-# Extensiones reconocidas por el motor editorial
 EXT_DOCS = {'.docx', '.odt', '.rtf', '.doc', '.md', '.markdown', '.txt'}
 EXT_PDF = {'.pdf'}
 EXT_VIDEOS = {'.mp4', '.webm', '.mov', '.mkv'}
@@ -12,38 +11,34 @@ EXT_AUDIOS = {'.mp3', '.wav', '.m4a', '.aac', '.ogg'}
 EXT_IMAGENES = {'.png', '.jpg', '.jpeg', '.webp', '.svg'}
 
 def clasificar_disciplina(texto):
-    """Asigna la sección editorial según análisis temático profundo."""
     t = texto.lower()
     if any(k in t for k in ['tdlc', 'tribunal de defensa', 'sentencia tdlc', 'requerimiento fne']):
         return "Jurisprudencia TDLC"
     elif any(k in t for k in ['colusión', 'colusion', 'cártel', 'cartel', 'fne', 'libre competencia', 'concentración', 'hhi']):
         return "Libre Competencia"
-    elif any(k in t for k in ['cmf', 'superintendencia', 'mercado financiero', 'tarifas', 'banca', 'servicios básicos', 'monopolio natural']):
+    elif any(k in t for k in ['cmf', 'superintendencia', 'mercado financiero', 'tarifas', 'banca', 'servicios básicos']):
         return "Mercados Regulados"
-    elif any(k in t for k in ['medio ambiente', 'sea', 'constitucional', 'política pública', 'proyecto de ley', 'legislativo']):
+    elif any(k in t for k in ['medio ambiente', 'sea', 'constitucional', 'política pública', 'proyecto de ley']):
         return "Políticas Públicas"
     return "Análisis Económico & Mercados"
 
 def identificar_firma(texto):
-    """Detecta la firma del autor o asigna la redacción institucional."""
     patron = re.search(r'(?:por|autor|escrito por|análisis de|redacción de)[:\s]+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){1,3})', texto, re.IGNORECASE)
     if patron:
         return patron.group(1).strip()
     return "Redacción Eficiencia & Norma"
 
 def generar_extracto(texto):
-    """Genera un copete formal para la portada principal."""
     parrafos = [p.strip() for p in texto.split("\n\n") if p.strip() and not p.startswith(('#', '!', '<', '>'))]
-    if parrafos:
-        primer_bloque = re.sub(r'[*_`]', '', parrafos[0])
-        palabras = primer_bloque.split()
-        if len(palabras) > 30:
-            return " ".join(palabras[:30]) + "..."
-        return primer_bloque
-    return "Análisis técnico de los principales antecedentes regulatorios, fundamentos económicos y alcance jurídico del caso analizado."
+    for p in parrafos:
+        limpio = re.sub(r'[*_`\\|]', '', p).strip()
+        palabras = limpio.split()
+        if len(palabras) >= 12:
+            return " ".join(palabras[:28]) + "..."
+    return "Análisis técnico de los principales fundamentos normativos, económicos y alcance regulatorio del caso."
 
 def main():
-    print("Iniciando Motor Editorial Universal (Eficiencia & Norma)...")
+    print("Iniciando Motor Editorial Eficiencia & Norma...")
 
     borradores_dir = "_borradores"
     posts_dir = "_posts"
@@ -59,32 +54,22 @@ def main():
     today_str = date.today().strftime("%Y-%m-%d")
 
     if not os.path.exists(borradores_dir):
-        print("Carpeta _borradores/ no existe.")
         return
 
     todos_los_archivos = [
         f for f in os.listdir(borradores_dir)
         if os.path.isfile(os.path.join(borradores_dir, f))
         and not f.startswith('.')
-        and not f.endswith(('.gitkeep', 'LEEME'))
+        and not f.endswith('.gitkeep')
     ]
 
-    if not todos_los_archivos:
-        print("Bandeja de borradores vacía.")
+    archivos_texto = [f for f in todos_los_archivos if os.path.splitext(f).lower() in (EXT_DOCS | EXT_PDF)]
+    archivos_video = [f for f in todos_los_archivos if os.path.splitext(f).lower() in EXT_VIDEOS]
+    archivos_audio = [f for f in todos_los_archivos if os.path.splitext(f).lower() in EXT_AUDIOS]
+    archivos_imagenes_sueltas = [f for f in todos_los_archivos if os.path.splitext(f).lower() in EXT_IMAGENES]
+
+    if not archivos_texto:
         return
-
-    # Separar por categorías de archivos
-    archivos_texto = [f for f in todos_los_archivos if os.path.splitext(f)[1].lower() in (EXT_DOCS | EXT_PDF)]
-    archivos_video = [f for f in todos_los_archivos if os.path.splitext(f)[1].lower() in EXT_VIDEOS]
-    archivos_audio = [f for f in todos_los_archivos if os.path.splitext(f)[1].lower() in EXT_AUDIOS]
-    archivos_imagenes_sueltas = [f for f in todos_los_archivos if os.path.splitext(f)[1].lower() in EXT_IMAGENES]
-
-    # Si solo subieron multimedia sin texto, generamos una nota de cobertura audiovisual automática
-    if not archivos_texto and (archivos_video or archivos_audio or archivos_imagenes_sueltas):
-        base_name = os.path.splitext(todos_los_archivos[0])[0]
-        archivos_texto = [f"{base_name}.txt"]
-        with open(os.path.join(borradores_dir, archivos_texto[0]), "w", encoding="utf-8") as f:
-            f.write(f"Registro y Cobertura Audiovisual: {base_name.replace('-', ' ').title()}.\n\nDocumentación anexa para análisis de la causa.")
 
     for filename in archivos_texto:
         filepath = os.path.join(borradores_dir, filename)
@@ -110,7 +95,7 @@ def main():
         multimedia_bloques = []
         imagenes_extraidas = []
 
-        # 1. PROCESAR VIDEOS (.mp4, .webm, .mov)
+        # 1. Videos
         for vid in archivos_video:
             origen = os.path.join(borradores_dir, vid)
             if os.path.exists(origen):
@@ -118,36 +103,22 @@ def main():
                 vid_url = f"/Diario/assets/video/{clean_slug}/{vid}"
                 multimedia_bloques.append(f'''
 <div class="editorial-video-container">
-  <video controls preload="metadata">
-    <source src="{vid_url}">
-    Tu navegador no soporta reproducción de video.
-  </video>
-  <div class="media-caption">
-    <span class="caption-label">Cápsula / Entrevista Audiovisual</span>
-    <span class="caption-credit">Registro de Sesión</span>
-  </div>
-</div>
-''')
+  <video controls preload="metadata"><source src="{vid_url}"></video>
+  <div class="media-caption"><span class="caption-label">Cápsula Audiovisual</span></div>
+</div>''')
 
-        # 2. PROCESAR AUDIOS / PODCASTS (.mp3, .wav, .m4a)
+        # 2. Audios
         for aud in archivos_audio:
             origen = os.path.join(borradores_dir, aud)
             if os.path.exists(origen):
                 shutil.move(origen, os.path.join(article_audio_dir, aud))
                 aud_url = f"/Diario/assets/audio/{clean_slug}/{aud}"
                 multimedia_bloques.append(f'''
-<div class="editorial-video-container" style="background: var(--bg-tint); padding: 18px; border: 1px solid var(--line);">
-  <div style="font-weight: 800; font-size: 0.85rem; color: var(--burgundy); margin-bottom: 8px; text-transform: uppercase;">
-    Entrevista / Declaración en Audio
-  </div>
-  <audio controls style="width: 100%;">
-    <source src="{aud_url}">
-    Tu navegador no soporta reproducción de audio.
-  </audio>
-</div>
-''')
+<div class="editorial-audio-container">
+  <audio controls style="width: 100%;"><source src="{aud_url}"></audio>
+</div>''')
 
-        # 3. MOVER IMÁGENES SUELTAS SUBIDAS A LA CARPETA
+        # 3. Imágenes sueltas
         for img in archivos_imagenes_sueltas:
             origen = os.path.join(borradores_dir, img)
             if os.path.exists(origen):
@@ -155,20 +126,18 @@ def main():
                 imagenes_extraidas.append(img)
                 multimedia_bloques.append(f'''
 <figure class="editorial-media">
-  <img src="/Diario/assets/img/{clean_slug}/{img}" alt="Fotografía documental" loading="lazy">
-  <figcaption><strong>Registro Documental:</strong> Evidencia fotográfica incorporada</figcaption>
-</figure>
-''')
+  <img src="/Diario/assets/img/{clean_slug}/{img}" alt="Registro documental" loading="lazy">
+  <figcaption>Registro Documental</figcaption>
+</figure>''')
 
-        # 4. EXTRACCIÓN DEL CONTENIDO ESCRITO
+        # 4. Procesamiento de Texto y Conversión
         raw_markdown = ""
 
-        # CASO A: Documentos de procesador (Word .docx, LibreOffice .odt, .rtf)
         if ext in {'.docx', '.odt', '.rtf'}:
             media_temp = os.path.join("/tmp", f"media_{clean_slug}")
             os.makedirs(media_temp, exist_ok=True)
 
-            cmd = ["pandoc", filepath, "-t", "gfm-raw_html", f"--extract-media={media_temp}", "--wrap=none"]
+            cmd = ["pandoc", filepath, "-f", "docx", "-t", "gfm", f"--extract-media={media_temp}", "--wrap=none"]
             res = subprocess.run(cmd, capture_output=True, text=True)
             raw_markdown = res.stdout
 
@@ -178,19 +147,20 @@ def main():
                     shutil.copy2(os.path.join(extracted_folder, img_file), os.path.join(article_img_dir, img_file))
                     imagenes_extraidas.append(img_file)
 
-            def reemplazar_figura(m):
-                alt_text = m.group(1).strip()
-                img_name = m.group(2).strip()
-                caption = alt_text if alt_text else "Gráfico / Esquema incorporado en el análisis"
+            # Reemplazar tanto etiquetas HTML <img src="..."> como Markdown ![alt](url)
+            def normalizar_img(m):
+                img_name = os.path.basename(m.group(1).replace('\\', '/').strip())
                 return f'''
 <figure class="editorial-media">
-  <img src="/Diario/assets/img/{clean_slug}/{img_name}" alt="{caption}" loading="lazy">
-  <figcaption><strong>Figura / Registro:</strong> {caption}</figcaption>
+  <img src="/Diario/assets/img/{clean_slug}/{img_name}" alt="Gráfico / Esquema técnico" loading="lazy">
+  <figcaption>Figura / Gráfico anexo al análisis</figcaption>
 </figure>
 '''
-            raw_markdown = re.sub(r'!\\[(.*?)\\]\\((?:.*?media/)?([^)]+)\\)', reemplazar_figura, raw_markdown)
+            # Capturar <img src="...">
+            raw_markdown = re.sub(r'<img[^>]+src=["\']([^"\']+)["\'][^>]*>', normalizar_img, raw_markdown)
+            # Capturar ![alt](url)
+            raw_markdown = re.sub(r'!\\[.*?\\]\\((.*?)\\)', normalizar_img, raw_markdown)
 
-        # CASO B: Documentos PDF (.pdf)
         elif ext == '.pdf':
             subprocess.run(["pdfimages", "-png", filepath, os.path.join(article_img_dir, "figura")], capture_output=True)
             txt_res = subprocess.run(["pdftotext", "-layout", filepath, "-"], capture_output=True, text=True)
@@ -201,45 +171,33 @@ def main():
             if pdf_imgs:
                 imagenes_extraidas.extend(pdf_imgs)
                 figuras_html = "\n\n".join([
-                    f'<figure class="editorial-media"><img src="/Diario/assets/img/{clean_slug}/{img}" alt="Figura de expediente" loading="lazy"><figcaption><strong>Anexo:</strong> Gráfico extraído del expediente oficial</figcaption></figure>'
+                    f'<figure class="editorial-media"><img src="/Diario/assets/img/{clean_slug}/{img}" alt="Registro documental" loading="lazy"><figcaption>Evidencia extraída del expediente</figcaption></figure>'
                     for img in pdf_imgs
                 ])
                 raw_markdown = figuras_html + "\n\n" + raw_markdown
 
-        # CASO C: Texto plano o Markdown (.md, .txt)
         else:
             if os.path.exists(filepath):
                 with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
                     raw_markdown = f.read()
 
-        # Insertar elementos audiovisuales en el cuerpo
         if multimedia_bloques:
             raw_markdown = "\n\n".join(multimedia_bloques) + "\n\n" + raw_markdown
 
-        # Conversión de videos de YouTube en reproductores integrados
-        raw_markdown = re.sub(
-            r'https?://(?:www\.)?youtube\.com/watch\?v=([a-zA-Z0-9_-]+)',
-            r'<div class="editorial-video-container"><iframe src="[suspicious link removed]" allowfullscreen></iframe><div class="media-caption"><span class="caption-label">Cápsula Informativa</span><span class="caption-credit">Cobertura Audiovisual</span></div></div>',
-            raw_markdown
-        )
-
-        # Higiene editorial profunda
+        # Higiene de caracteres
         raw_markdown = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', raw_markdown)
-        raw_markdown = re.sub(r'<\/?(span|font|o:p)[^>]*>', '', raw_markdown)
 
-        # Metadatos automáticos
         categoria = clasificar_disciplina(raw_markdown)
         autor = identificar_firma(raw_markdown)
         resumen = generar_extracto(raw_markdown)
         total_palabras = len(re.findall(r'\b\w+\b', raw_markdown))
         tiempo_lectura = max(1, round(total_palabras / 200))
 
-        # Imagen de portada si existe alguna figura
         imagen_portada = ""
         if imagenes_extraidas:
             imagen_portada = f"/Diario/assets/img/{clean_slug}/{imagenes_extraidas[0]}"
 
-        # Maquetación sobria (The Economist / El Dínamo)
+        # Diagramación editorial
         parrafos = [p.strip() for p in raw_markdown.split("\n\n") if p.strip()]
         cuerpo_final = []
         dropcap_listo = False
@@ -257,36 +215,94 @@ def main():
                     dropcap_listo = True
 
             if p.startswith('>'):
-                cita = re.sub(r'^>\s*', '', p, flags=re.MULTILINE)
+                cita = re.sub(r'^>\s*', '', p, flags=re.MULTILINE).replace('>', '').strip()
                 p = f'<figure class="pull-quote"><blockquote>"{cita}"</blockquote><figcaption>— Referencia del Pronunciamiento</figcaption></figure>'
 
             cuerpo_final.append(p)
 
         contenido_maquetado = "\n\n".join(cuerpo_final)
 
-        # Generar Front Matter limpio
-       # 1. Sanitización estricta para evitar errores de sintaxis YAML
-        def limpiar_yaml(cadena):
-    if not cadena:
-        return ""
-    # Quitar cualquier barra invertida suelta (como \| o \Delta)
-    s = cadena.replace('\\', '')
-    # Escapar comillas dobles internas
-    s = s.replace('"', '\\"')
-    # Convertir saltos de línea en un solo espacio para que quede en 1 línea
-    s = re.sub(r'\s+', ' ', s)
-    return s.strip()
+        # Sanitización de Front Matter YAML
+        def sanitizar(val):
+            return re.sub(r'[\"\n\r\\]', ' ', str(val)).strip()
 
-        # 2. Front Matter 100% compatible con Jekyll
         front_matter = f"""---
 layout: post
-title: "{clean_title_yaml}"
-author: "{autor_yaml}"
+title: "{sanitizar(clean_title)}"
+author: "{sanitizar(autor)}"
 date: {today_str}
-category: "{categoria_yaml}"
+category: "{sanitizar(categoria)}"
 reading_time: "{tiempo_lectura} min de lectura"
-excerpt: "{resumen_yaml}"
+excerpt: "{sanitizar(resumen)}"
 """
         if imagen_portada:
             front_matter += f'image: "{imagen_portada}"\n'
         front_matter += "---\n\n"
+
+        with open(post_path, "w", encoding="utf-8") as f:
+            f.write(front_matter + contenido_maquetado + "\n")
+
+        if os.path.exists(filepath):
+            os.remove(filepath)
+
+        print(f"✔ Publicación completada con éxito: {post_filename}")
+
+if __name__ == "__main__":
+    main()
+Guarda los cambios con Commit changes....
+Paso 2: Asegurar el Diseño en _layouts/post.html
+Abre _layouts/post.html y asegúrate de que dentro de su etiqueta <style> estén presentes las siguientes directivas para formatear de inmediato tablas y figuras:
+/* TABLAS DE PRENSA */
+.article-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 32px 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.9rem;
+  border: 1px solid var(--line);
+}
+
+.article-content th {
+  background-color: var(--burgundy);
+  color: #ffffff;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.article-content td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line-subtle);
+  color: var(--ink-subtle);
+}
+
+.article-content tr:nth-child(even) td {
+  background-color: var(--bg-tint);
+}
+
+/* FIGURAS E IMÁGENES CENTRADAS */
+.article-content figure,
+.article-content .editorial-media {
+  margin: 36px auto;
+  text-align: center;
+  max-width: 100%;
+}
+
+.article-content img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.article-content figcaption {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  margin-top: 8px;
+  font-style: italic;
+}
