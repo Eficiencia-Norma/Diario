@@ -265,27 +265,33 @@ def main():
         contenido_maquetado = "\n\n".join(cuerpo_final)
 
         # Generar Front Matter limpio
+       # 1. Sanitización estricta para evitar errores de sintaxis YAML
+        def limpiar_yaml(cadena):
+            if not cadena:
+                return ""
+            # Quitar barras invertidas sueltas que rompen el parser de Jekyll
+            s = cadena.replace('\\', '')
+            # Escapar comillas dobles
+            s = s.replace('"', '\\"')
+            # Reemplazar saltos de línea por espacios
+            s = re.sub(r'\s+', ' ', s)
+            return s.strip()
+
+        clean_title_yaml = limpiar_yaml(clean_title)
+        autor_yaml = limpiar_yaml(autor)
+        categoria_yaml = limpiar_yaml(categoria)
+        resumen_yaml = limpiar_yaml(resumen)
+
+        # 2. Front Matter 100% compatible con Jekyll
         front_matter = f"""---
 layout: post
-title: "{clean_title}"
-author: "{autor}"
+title: "{clean_title_yaml}"
+author: "{autor_yaml}"
 date: {today_str}
-category: "{categoria}"
+category: "{categoria_yaml}"
 reading_time: "{tiempo_lectura} min de lectura"
-excerpt: "{resumen}"
+excerpt: "{resumen_yaml}"
 """
         if imagen_portada:
             front_matter += f'image: "{imagen_portada}"\n'
         front_matter += "---\n\n"
-
-        with open(post_path, "w", encoding="utf-8") as f:
-            f.write(front_matter + contenido_maquetado + "\n")
-
-        # Eliminar archivo original de la bandeja
-        if os.path.exists(filepath):
-            os.remove(filepath)
-            
-        print(f"✔ Publicación completada con éxito: {post_filename} ({ext.upper()})")
-
-if __name__ == "__main__":
-    main()
