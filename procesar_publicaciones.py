@@ -267,20 +267,15 @@ def main():
         # Generar Front Matter limpio
        # 1. Sanitización estricta para evitar errores de sintaxis YAML
         def limpiar_yaml(cadena):
-            if not cadena:
-                return ""
-            # Quitar barras invertidas sueltas que rompen el parser de Jekyll
-            s = cadena.replace('\\', '')
-            # Escapar comillas dobles
-            s = s.replace('"', '\\"')
-            # Reemplazar saltos de línea por espacios
-            s = re.sub(r'\s+', ' ', s)
-            return s.strip()
-
-        clean_title_yaml = limpiar_yaml(clean_title)
-        autor_yaml = limpiar_yaml(autor)
-        categoria_yaml = limpiar_yaml(categoria)
-        resumen_yaml = limpiar_yaml(resumen)
+    if not cadena:
+        return ""
+    # Quitar cualquier barra invertida suelta (como \| o \Delta)
+    s = cadena.replace('\\', '')
+    # Escapar comillas dobles internas
+    s = s.replace('"', '\\"')
+    # Convertir saltos de línea en un solo espacio para que quede en 1 línea
+    s = re.sub(r'\s+', ' ', s)
+    return s.strip()
 
         # 2. Front Matter 100% compatible con Jekyll
         front_matter = f"""---
