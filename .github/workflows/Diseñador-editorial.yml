@@ -37,3 +37,11 @@ jobs:
           git config --global user.email "bot@eficiencia-norma.cl"
           git add _posts/ assets/ _borradores/
           git diff --quiet && git diff --staged --quiet || (git commit -m "Auto: Publicación maquetada con gráficos y multimedia" && git push)
+
+      - name: Publicar cambios en el repositorio
+        run: |
+          git config --global user.name "Bot Eficiencia & Norma"
+          git config --global user.email "bot@eficiencia-norma.cl"
+          # Asegurar que Git capture tanto los posts como todas las imágenes nuevas
+          git add _posts/ assets/ _borradores/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto: Publicación maquetada con imágenes y gráficos" && git push)
