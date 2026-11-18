@@ -1,4 +1,4 @@
-name: Editor y Diseñador Editorial de Alta Gama
+name: Disenador Editorial
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  publicacion_editorial:
-    name: Procesar, Auditar y Maquetar Publicación
+  maquetar_publicaciones:
+    name: Procesar Borradores y Publicar
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -17,171 +17,23 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Instalar herramientas de sistema y Python
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar herramientas de conversión
         run: |
           sudo apt-get update
           sudo apt-get install -y pandoc poppler-utils
-          pip install python-docx pypdf pillow pyspellchecker
 
-      - name: Motor de Diseño Editorial estilo The Economist
+      - name: Ejecutar Maquetador Editorial
         run: |
-          python3 - << 'EOF'
-          import os
-          import re
-          import shutil
-          import subprocess
-          from datetime import date
-          from spellchecker import SpellChecker
+          python3 procesar_publicaciones.py
 
-          # Inicializar corrector ortográfico
-          spell = SpellChecker(language='es')
-          terminos_clave = {'tdlc', 'fne', 'cencosud', 'cartel', 'carteles', 'colusion', 'post', 'markdown', 'docx', 'pdf', 'standfirst', 'takeaways'}
-          spell.word_frequency.load_words(terminos_clave)
-
-          borradores_dir = "_borradores"
-          posts_dir = "_posts"
-          img_base_dir = "assets/img"
-          docs_base_dir = "assets/docs"
-
-          os.makedirs(posts_dir, exist_ok=True)
-          os.makedirs(img_base_dir, exist_ok=True)
-          os.makedirs(docs_base_dir, exist_ok=True)
-
-          today_str = date.today().strftime("%Y-%m-%d")
-
-          archivos = [f for f in os.listdir(borradores_dir) if os.path.isfile(os.path.join(borradores_dir, f)) and not f.endswith(('.txt', '.gitkeep', 'LEEME'))]
-
-          if not archivos:
-              print("No hay borradores pendientes.")
-              exit(0)
-
-          for filename in archivos:
-              print(f"\n==========================================")
-              print(f"📐 MAQUETANDO DOCUMENTO: {filename}")
-              print(f"==========================================")
-
-              filepath = os.path.join(borradores_dir, filename)
-              base_name, ext = os.path.splitext(filename)
-              ext = ext.lower().replace('.', '')
-
-              clean_slug = re.sub(r'[^a-zA-Z0-9]+', '-', base_name.lower()).strip('-')
-              clean_title = base_name.replace('-', ' ').replace('_', ' ').strip().title()
-
-              post_filename = f"{today_str}-{clean_slug}.md"
-              post_path = os.path.join(posts_dir, post_filename)
-              article_img_dir = os.path.join(img_base_dir, clean_slug)
-              os.makedirs(article_img_dir, exist_ok=True)
-
-              raw_markdown = ""
-
-              # 1. Extracción pura del contenido
-              if ext == "docx":
-                  media_temp = os.path.join("/tmp", f"media_{clean_slug}")
-                  os.makedirs(media_temp, exist_ok=True)
-                  cmd = ["pandoc", filepath, "-f", "docx", "-t", "gfm-raw_html", f"--extract-media={media_temp}", "--wrap=none"]
-                  res = subprocess.run(cmd, capture_output=True, text=True)
-                  raw_markdown = res.stdout
-
-                  extracted_folder = os.path.join(media_temp, "media")
-                  if os.path.exists(extracted_folder):
-                      for img_file in os.listdir(extracted_folder):
-                          shutil.copy2(os.path.join(extracted_folder, img_file), os.path.join(article_img_dir, img_file))
-
-                  raw_markdown = re.sub(
-                      r'!\\[(.*?)\\]\\([^)]*media/([^)]+)\\)',
-                      rf'![\1]({{{{ site.baseurl }}}}/assets/img/{clean_slug}/\2)',
-                      raw_markdown
-                  )
-
-              elif ext == "pdf":
-                  shutil.copy2(filepath, os.path.join(docs_base_dir, f"{today_str}-{clean_slug}.pdf"))
-                  subprocess.run(["pdfimages", "-png", filepath, os.path.join(article_img_dir, "img")], capture_output=True)
-                  txt_res = subprocess.run(["pdftotext", "-layout", filepath, "-"], capture_output=True, text=True)
-                  raw_lines = [l.strip() for l in txt_res.stdout.splitlines() if not re.match(r'^(Página\s+\d+|\d+)$', l.strip())]
-                  raw_markdown = "\n\n".join([p for p in "\n".join(raw_lines).split("\n\n") if p.strip()])
-                  raw_markdown += f"\n\n---\n\n<div class=\"download-box\">📥 <strong>Documentación Oficial:</strong> <a href=\"{{{{ site.baseurl }}}}/assets/docs/{today_str}-{clean_slug}.pdf\" target=\"_blank\">Descargar archivo original en PDF</a></div>\n"
-
-              elif ext in ["md", "txt"]:
-                  with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
-                      raw_markdown = f.read()
-
-              # 2. Higiene de texto: Eliminar basuras invisibles y spans de Word
-              raw_markdown = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', raw_markdown)
-              raw_markdown = re.sub(r'<\/?(span|font|o:p)[^>]*>', '', raw_markdown)
-
-              # 3. Cálculo de tiempo de lectura
-              total_palabras = len(re.findall(r'\b\w+\b', raw_markdown))
-              tiempo_lectura = max(1, round(total_palabras / 200))
-
-              # 4. MAQUETACIÓN EDITORIAL PROFESIONAL (ESTILO THE ECONOMIST)
-              parrafos = [p.strip() for p in raw_markdown.split("\n\n") if p.strip()]
-              cuerpo_final = []
-              dropcap_aplicado = False
-
-              for idx, p in enumerate(parrafos):
-                  # A) Identificar y maquetar Copete/Standfirst en el primer párrafo largo
-                  if idx == 0 and len(p.split()) > 15 and not p.startswith(('#', '!', '<')):
-                      cuerpo_final.append(f'<p class="editorial-standfirst">{p}</p>')
-                      continue
-
-                  # B) Letra Capital (Drop Cap) en el siguiente párrafo narrativo
-                  if not dropcap_aplicado and not p.startswith(('#', '!', '<', '>', '|', '-')):
-                      match = re.match(r'^([^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]*)([a-zA-ZáéíóúüñÁÉÍÓÚÜÑ])(.*)$', p, re.DOTALL)
-                      if match:
-                          pref, letra, resto = match.groups()
-                          p = f'{pref}<span class="drop-cap">{letra}</span>{resto}'
-                          dropcap_aplicado = True
-
-                  # C) Transformar citas de bloque (Blockquotes) en Pull Quotes de revista
-                  if p.startswith('>'):
-                      cita_limpia = re.sub(r'^>\s*', '', p, flags=re.MULTILINE)
-                      p = f'''<figure class="pull-quote">
-  <blockquote>“{cita_limpia}”</blockquote>
-  <figcaption>— Referencia del Fallo / Dictamen</figcaption>
-</figure>'''
-
-                  # D) Subtítulos con jerarquía tipográfica editorial
-                  elif p.startswith('## '):
-                      titulo_sec = p.replace('## ', '').strip()
-                      p = f'<h2 class="editorial-h2"><span class="h2-accent"></span>{titulo_sec}</h2>'
-
-                  elif p.startswith('### '):
-                      titulo_sub = p.replace('### ', '').strip()
-                      p = f'<h3 class="editorial-h3">{titulo_sub}</h3>'
-
-                  cuerpo_final.append(p)
-
-              contenido_disenado = "\n\n".join(cuerpo_final)
-
-              # 5. Formatear Tablas para que sean 100% responsivas
-              contenido_disenado = re.sub(
-                  r'(<table>.*?<\/table>)',
-                  r'<div class="table-responsive">\1</div>',
-                  contenido_disenado,
-                  flags=re.DOTALL
-              )
-
-              # 6. Front Matter con metadatos completos
-              front_matter = f"""---
-layout: post
-title: "{clean_title}"
-author: "Equipo Editorial"
-date: {today_str}
-category: "Mercados & Regulación"
-reading_time: "{tiempo_lectura} min de lectura"
----
-
-"""
-              with open(post_path, "w", encoding="utf-8") as f:
-                  f.write(front_matter + contenido_disenado + "\n")
-
-              os.remove(filepath)
-              print(f"✨ [OBRA MAESTRA]: Documento maquetado y publicado como {post_filename} ({tiempo_lectura} min de lectura)")
-          EOF
-
-      - name: Confirmar y publicar maquetación
+      - name: Publicar cambios en el repositorio
         run: |
-          git config --global user.name "Bot Diseñador Eficiencia & Norma"
+          git config --global user.name "Bot Eficiencia & Norma"
           git config --global user.email "bot@eficiencia-norma.cl"
           git add _posts/ assets/ _borradores/
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Arte: Publicación con maquetación editorial The Economist" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto: Publicación maquetada con gráficos y multimedia" && git push)
