@@ -5,7 +5,10 @@ on:
     paths:
       - '_borradores/**'
   workflow_dispatch:
-
+  
+permissions:
+  contents: write
+  
 jobs:
   publicar:
     runs-on: ubuntu-latest
