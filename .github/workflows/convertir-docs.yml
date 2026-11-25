@@ -37,3 +37,34 @@ jobs:
           git config --global user.email "bot@eficiencia-norma.cl"
           git add _posts/ assets/ _borradores/
           git diff --quiet && git diff --staged --quiet || (git commit -m "Auto: Publicación editorial maquetada y limpia" && git push)
+
+          steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # ESTE ES EL PASO CLAVE QUE FALTA EN ESE FLUJO:
+      - name: Instalar Pandoc, Fuentes y Motor Gráfico Pillow
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc poppler-utils fonts-dejavu-core fonts-liberation python3-pil
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pillow
+
+      - name: Procesar borradores y maquetar
+        run: python3 procesar_publicaciones.py
+
+      - name: Guardar cambios y publicar en GitHub Pages
+        run: |
+          git config --global user.name "Director de Arte Eficiencia & Norma"
+          git config --global user.email "bot@eficiencia-norma.cl"
+          git add _posts/ assets/ _borradores/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto: Publicación maquetada con portada" && git push)
+
+          
