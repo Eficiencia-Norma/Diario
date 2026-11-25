@@ -7,38 +7,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  procesar_publicaciones:
-    name: Procesar Borradores y Maquetar
+  publicar:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
-      - name: Descargar repositorio
-        uses: actions/checkout@v4
-
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Instalar herramientas del sistema
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pandoc poppler-utils
-
-      - name: Ejecutar Procesador Editorial
-        run: |
-          python3 procesar_publicaciones.py
-
-      - name: Confirmar y Publicar en Repositorio
-        run: |
-          git config --global user.name "Bot Eficiencia & Norma"
-          git config --global user.email "bot@eficiencia-norma.cl"
-          git add _posts/ assets/ _borradores/
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto: Publicación editorial maquetada y limpia" && git push)
-
-          steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
         with:
@@ -49,7 +20,6 @@ jobs:
         with:
           python-version: '3.11'
 
-      # ESTE ES EL PASO CLAVE QUE FALTA EN ESE FLUJO:
       - name: Instalar Pandoc, Fuentes y Motor Gráfico Pillow
         run: |
           sudo apt-get update
@@ -65,6 +35,4 @@ jobs:
           git config --global user.name "Director de Arte Eficiencia & Norma"
           git config --global user.email "bot@eficiencia-norma.cl"
           git add _posts/ assets/ _borradores/
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto: Publicación maquetada con portada" && git push)
-
-          
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto: Publicación con portada de Director de Arte" && git push)
