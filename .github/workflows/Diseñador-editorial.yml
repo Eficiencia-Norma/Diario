@@ -23,9 +23,9 @@ jobs:
       - name: Instalar Pandoc, Fuentes y Motor Gráfico Pillow
         run: |
           sudo apt-get update
-          sudo apt-get install -y pandoc poppler-utils fonts-dejavu-core fonts-liberation
-          python -m pip install --upgrade pip
-          pip install pillow
+          sudo apt-get install -y pandoc poppler-utils fonts-dejavu-core fonts-liberation python3-pil
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pillow
 
       - name: Procesar borradores y maquetar
         run: python3 procesar_publicaciones.py
