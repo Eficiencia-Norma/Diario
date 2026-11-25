@@ -1,5 +1,7 @@
 name: Publicador Editorial Blindado
 
+permissions:
+  contents: write
 on:
   push:
     paths:
