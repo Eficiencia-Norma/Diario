@@ -154,7 +154,7 @@ def main():
         and not f.endswith('.gitkeep')
     ]
 
-    archivos_texto = [f for f in todos if os.path.splitext(f).lower() in (EXT_DOCS | EXT_PDF)]
+archivos_texto = [f for f in todos if os.path.splitext(f)[1].lower() in (EXT_DOCS | EXT_PDF)]
     if not archivos_texto:
         print("No hay borradores para procesar.")
         return
