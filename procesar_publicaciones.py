@@ -3,6 +3,7 @@ import re
 import shutil
 import subprocess
 from datetime import date
+from PIL import Image, ImageDraw, ImageFont
 
 EXT_DOCS = {'.docx', '.odt', '.rtf', '.doc', '.md', '.markdown', '.txt'}
 EXT_PDF = {'.pdf'}
@@ -34,41 +35,128 @@ def generar_extracto(texto):
         limpio = re.sub(r'[*_`\\|]', '', p).strip()
         palabras = limpio.split()
         if len(palabras) >= 12:
-            return " ".join(palabras[:28]) + "..."
-    return "Análisis técnico de los principales fundamentos normativos, económicos y alcance regulatorio del caso."
+            return " ".join(palabras[:26]) + "..."
+    return "Análisis técnico de los fundamentos económicos, jurisprudencia aplicable y marco regulatorio."
+
+def disenar_portada_editorial(titulo, categoria, autor, ruta_salida):
+    """
+    Motor Director de Arte (Estilo The Economist / Financial Times):
+    Crea una portada 16:9 (1200x675 px) con tipografía serif imponente,
+    marcos burdeo institucional y acabados sobrios de alta prensa.
+    """
+    W, H = 1200, 675
+    # Fondo grafito oscuro editorial
+    img = Image.new('RGB', (W, H), color='#12151a')
+    draw = ImageDraw.Draw(img)
+
+    # 1. Franja superior e inferior en Burdeo Institucional (#8b1517)
+    draw.rectangle([(0, 0), (W, 16)], fill='#8b1517')
+    draw.rectangle([(0, H - 14), (W, H)], fill='#8b1517')
+
+    # 2. Marco sutil interior
+    draw.rectangle([(36, 40), (W - 36, H - 38)], outline='#262c36', width=2)
+
+    # 3. Intentar cargar fuentes tipográficas del sistema (Linux / Ubuntu Runner)
+    def cargar_fuente(rutas, tam):
+        for r in rutas:
+            if os.path.exists(r):
+                try:
+                    return ImageFont.truetype(r, tam)
+                except Exception:
+                    pass
+        return ImageFont.load_default()
+
+    font_sello = cargar_fuente([
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
+    ], 15)
+
+    font_cat = cargar_fuente([
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
+    ], 18)
+
+    font_tit = cargar_fuente([
+        "/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf"
+    ], 46)
+
+    font_meta = cargar_fuente([
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"
+    ], 17)
+
+    # 4. Cabecera de la Portada: Sello Editorial
+    draw.text((64, 60), "EFICIENCIA & NORMA", font=font_sello, fill='#8b1517')
+    draw.text((260, 60), "·   ANÁLISIS ECONÓMICO Y DERECHO REGULATORIO", font=font_sello, fill='#8a95a5')
+
+    # Línea divisoria
+    draw.line([(64, 94), (W - 64, 94)], fill='#2a323d', width=1)
+
+    # 5. Categoría (Pill formal)
+    cat_texto = f"  {categoria.upper()}  "
+    draw.rectangle([(64, 126), (64 + len(cat_texto)*12, 160)], fill='#1a2332')
+    draw.rectangle([(64, 126), (68, 160)], fill='#8b1517') # Acento burdeo
+    draw.text((76, 133), cat_texto.strip(), font=font_cat, fill='#ffffff')
+
+    # 6. Titular con corte de líneas inteligente
+    palabras = titulo.split()
+    lineas = []
+    linea_actual = []
+
+    for p in palabras:
+        linea_actual.append(p)
+        texto_linea = " ".join(linea_actual)
+        # Aproximación de ancho para máximo 38 caracteres por línea
+        if len(texto_linea) > 36:
+            lineas.append(" ".join(linea_actual[:-1]))
+            linea_actual = [p]
+    if linea_actual:
+        lineas.append(" ".join(linea_actual))
+
+    # Limitar a máximo 4 líneas para que no choque con el pie
+    lineas = lineas[:4]
+
+    y_tit = 210
+    for l in lineas:
+        draw.text((64, y_tit), l, font=font_tit, fill='#f8fafc')
+        y_tit += 62
+
+    # 7. Pleca y Metadatos de Cierre (Autor y Edición)
+    draw.line([(64, H - 110), (W - 64, H - 110)], fill='#2a323d', width=1)
+    draw.text((64, H - 85), f"POR: {autor.upper()}", font=font_meta, fill='#d53f43')
+    draw.text((W - 320, H - 85), "EDICIÓN DIGITAL ESPECIALIZADA", font=font_meta, fill='#64748b')
+
+    # Guardar en assets
+    os.makedirs(os.path.dirname(ruta_salida), exist_ok=True)
+    img.save(ruta_salida, format="JPEG", quality=92)
+    print(f"✔ Portada editorial diseñada exitosamente: {ruta_salida}")
 
 def main():
-    print("Iniciando Motor Editorial Eficiencia & Norma...")
+    print("Iniciando Motor Editorial con Director de Arte...")
 
     borradores_dir = "_borradores"
     posts_dir = "_posts"
     img_base_dir = "assets/img"
-    video_base_dir = "assets/video"
-    audio_base_dir = "assets/audio"
 
     os.makedirs(posts_dir, exist_ok=True)
     os.makedirs(img_base_dir, exist_ok=True)
-    os.makedirs(video_base_dir, exist_ok=True)
-    os.makedirs(audio_base_dir, exist_ok=True)
 
     today_str = date.today().strftime("%Y-%m-%d")
 
     if not os.path.exists(borradores_dir):
         return
 
-    todos_los_archivos = [
+    todos = [
         f for f in os.listdir(borradores_dir)
         if os.path.isfile(os.path.join(borradores_dir, f))
         and not f.startswith('.')
         and not f.endswith('.gitkeep')
     ]
 
-    archivos_texto = [f for f in todos_los_archivos if os.path.splitext(f).lower() in (EXT_DOCS | EXT_PDF)]
-    archivos_video = [f for f in todos_los_archivos if os.path.splitext(f).lower() in EXT_VIDEOS]
-    archivos_audio = [f for f in todos_los_archivos if os.path.splitext(f).lower() in EXT_AUDIOS]
-    archivos_imagenes_sueltas = [f for f in todos_los_archivos if os.path.splitext(f).lower() in EXT_IMAGENES]
-
+    archivos_texto = [f for f in todos if os.path.splitext(f).lower() in (EXT_DOCS | EXT_PDF)]
     if not archivos_texto:
+        print("No hay borradores para procesar.")
         return
 
     for filename in archivos_texto:
@@ -83,56 +171,12 @@ def main():
 
         post_filename = f"{today_str}-{clean_slug}.md"
         post_path = os.path.join(posts_dir, post_filename)
-
         article_img_dir = os.path.join(img_base_dir, clean_slug)
-        article_video_dir = os.path.join(video_base_dir, clean_slug)
-        article_audio_dir = os.path.join(audio_base_dir, clean_slug)
-
         os.makedirs(article_img_dir, exist_ok=True)
-        os.makedirs(article_video_dir, exist_ok=True)
-        os.makedirs(article_audio_dir, exist_ok=True)
 
-        multimedia_bloques = []
-        imagenes_extraidas = []
-
-        # 1. Videos
-        for vid in archivos_video:
-            origen = os.path.join(borradores_dir, vid)
-            if os.path.exists(origen):
-                shutil.move(origen, os.path.join(article_video_dir, vid))
-                vid_url = f"/Diario/assets/video/{clean_slug}/{vid}"
-                multimedia_bloques.append(f'''
-<div class="editorial-video-container">
-  <video controls preload="metadata"><source src="{vid_url}"></video>
-  <div class="media-caption"><span class="caption-label">Cápsula Audiovisual</span></div>
-</div>''')
-
-        # 2. Audios
-        for aud in archivos_audio:
-            origen = os.path.join(borradores_dir, aud)
-            if os.path.exists(origen):
-                shutil.move(origen, os.path.join(article_audio_dir, aud))
-                aud_url = f"/Diario/assets/audio/{clean_slug}/{aud}"
-                multimedia_bloques.append(f'''
-<div class="editorial-audio-container">
-  <audio controls style="width: 100%;"><source src="{aud_url}"></audio>
-</div>''')
-
-        # 3. Imágenes sueltas
-        for img in archivos_imagenes_sueltas:
-            origen = os.path.join(borradores_dir, img)
-            if os.path.exists(origen):
-                shutil.move(origen, os.path.join(article_img_dir, img))
-                imagenes_extraidas.append(img)
-                multimedia_bloques.append(f'''
-<figure class="editorial-media">
-  <img src="/Diario/assets/img/{clean_slug}/{img}" alt="Registro documental" loading="lazy">
-  <figcaption>Registro Documental</figcaption>
-</figure>''')
-
-        # 4. Procesamiento de Texto y Conversión
         raw_markdown = ""
 
+        # Conversión de Word / LibreOffice
         if ext in {'.docx', '.odt', '.rtf'}:
             media_temp = os.path.join("/tmp", f"media_{clean_slug}")
             os.makedirs(media_temp, exist_ok=True)
@@ -145,46 +189,29 @@ def main():
             if os.path.exists(extracted_folder):
                 for img_file in sorted(os.listdir(extracted_folder)):
                     shutil.copy2(os.path.join(extracted_folder, img_file), os.path.join(article_img_dir, img_file))
-                    imagenes_extraidas.append(img_file)
 
-            # Reemplazar tanto etiquetas HTML <img src="..."> como Markdown ![alt](url)
             def normalizar_img(m):
                 img_name = os.path.basename(m.group(1).replace('\\', '/').strip())
                 return f'''
 <figure class="editorial-media">
-  <img src="/Diario/assets/img/{clean_slug}/{img_name}" alt="Gráfico / Esquema técnico" loading="lazy">
+  <img src="/Diario/assets/img/{clean_slug}/{img_name}" alt="Gráfico del análisis" loading="lazy">
   <figcaption>Figura / Gráfico anexo al análisis</figcaption>
-</figure>
-'''
-            # Capturar <img src="...">
+</figure>'''
+
             raw_markdown = re.sub(r'<img[^>]+src=["\']([^"\']+)["\'][^>]*>', normalizar_img, raw_markdown)
-            # Capturar ![alt](url)
             raw_markdown = re.sub(r'!\\[.*?\\]\\((.*?)\\)', normalizar_img, raw_markdown)
 
+        # Conversión de PDF
         elif ext == '.pdf':
             subprocess.run(["pdfimages", "-png", filepath, os.path.join(article_img_dir, "figura")], capture_output=True)
             txt_res = subprocess.run(["pdftotext", "-layout", filepath, "-"], capture_output=True, text=True)
             raw_lines = [l.strip() for l in txt_res.stdout.splitlines() if not re.match(r'^(Página\s+\d+|\d+)$', l.strip())]
             raw_markdown = "\n\n".join([p for p in "\n".join(raw_lines).split("\n\n") if p.strip()])
 
-            pdf_imgs = sorted([f for f in os.listdir(article_img_dir) if f.startswith("figura")])
-            if pdf_imgs:
-                imagenes_extraidas.extend(pdf_imgs)
-                figuras_html = "\n\n".join([
-                    f'<figure class="editorial-media"><img src="/Diario/assets/img/{clean_slug}/{img}" alt="Registro documental" loading="lazy"><figcaption>Evidencia extraída del expediente</figcaption></figure>'
-                    for img in pdf_imgs
-                ])
-                raw_markdown = figuras_html + "\n\n" + raw_markdown
-
         else:
-            if os.path.exists(filepath):
-                with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
-                    raw_markdown = f.read()
+            with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+                raw_markdown = f.read()
 
-        if multimedia_bloques:
-            raw_markdown = "\n\n".join(multimedia_bloques) + "\n\n" + raw_markdown
-
-        # Higiene de caracteres
         raw_markdown = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', raw_markdown)
 
         categoria = clasificar_disciplina(raw_markdown)
@@ -193,11 +220,14 @@ def main():
         total_palabras = len(re.findall(r'\b\w+\b', raw_markdown))
         tiempo_lectura = max(1, round(total_palabras / 200))
 
-        imagen_portada = ""
-        if imagenes_extraidas:
-            imagen_portada = f"/Diario/assets/img/{clean_slug}/{imagenes_extraidas[0]}"
+        # DISEÑAR PORTADA AUTOMÁTICA EN 16:9
+        portada_nombre = "portada.jpg"
+        portada_ruta_fisica = os.path.join(article_img_dir, portada_nombre)
+        portada_url_web = f"/Diario/assets/img/{clean_slug}/{portada_nombre}"
 
-        # Diagramación editorial
+        disenar_portada_editorial(clean_title, categoria, autor, portada_ruta_fisica)
+
+        # Maquetación de párrafos y citas
         parrafos = [p.strip() for p in raw_markdown.split("\n\n") if p.strip()]
         cuerpo_final = []
         dropcap_listo = False
@@ -216,13 +246,12 @@ def main():
 
             if p.startswith('>'):
                 cita = re.sub(r'^>\s*', '', p, flags=re.MULTILINE).replace('>', '').strip()
-                p = f'<figure class="pull-quote"><blockquote>"{cita}"</blockquote><figcaption>— Referencia del Pronunciamiento</figcaption></figure>'
+                p = f'<figure class="pull-quote"><blockquote>"{cita}"</blockquote><figcaption>— Criterio Jurisprudencial</figcaption></figure>'
 
             cuerpo_final.append(p)
 
         contenido_maquetado = "\n\n".join(cuerpo_final)
 
-        # Sanitización de Front Matter YAML
         def sanitizar(val):
             return re.sub(r'[\"\n\r\\]', ' ', str(val)).strip()
 
@@ -234,11 +263,10 @@ date: {today_str}
 category: "{sanitizar(categoria)}"
 reading_time: "{tiempo_lectura} min de lectura"
 excerpt: "{sanitizar(resumen)}"
-"""
-        if imagen_portada:
-            front_matter += f'image: "{imagen_portada}"\n'
-        front_matter += "---\n\n"
+image: "{portada_url_web}"
+---
 
+"""
         with open(post_path, "w", encoding="utf-8") as f:
             f.write(front_matter + contenido_maquetado + "\n")
 
@@ -249,60 +277,3 @@ excerpt: "{sanitizar(resumen)}"
 
 if __name__ == "__main__":
     main()
-Guarda los cambios con Commit changes....
-Paso 2: Asegurar el Diseño en _layouts/post.html
-Abre _layouts/post.html y asegúrate de que dentro de su etiqueta <style> estén presentes las siguientes directivas para formatear de inmediato tablas y figuras:
-/* TABLAS DE PRENSA */
-.article-content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 32px 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 0.9rem;
-  border: 1px solid var(--line);
-}
-
-.article-content th {
-  background-color: var(--burgundy);
-  color: #ffffff;
-  padding: 10px 14px;
-  text-align: left;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.article-content td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--line-subtle);
-  color: var(--ink-subtle);
-}
-
-.article-content tr:nth-child(even) td {
-  background-color: var(--bg-tint);
-}
-
-/* FIGURAS E IMÁGENES CENTRADAS */
-.article-content figure,
-.article-content .editorial-media {
-  margin: 36px auto;
-  text-align: center;
-  max-width: 100%;
-}
-
-.article-content img {
-  display: block;
-  margin: 0 auto;
-  max-width: 100%;
-  height: auto;
-  border: 1px solid var(--line);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-}
-
-.article-content figcaption {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 0.82rem;
-  color: var(--ink-muted);
-  margin-top: 8px;
-  font-style: italic;
-}
