@@ -1,4 +1,4 @@
-name: Disenador Editorial
+name: Diseñador Editorial Automático
 
 on:
   push:
@@ -7,41 +7,31 @@ on:
   workflow_dispatch:
 
 jobs:
-  maquetar_publicaciones:
-    name: Procesar Borradores y Publicar
+  publicar:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Configurar Python
+      - name: Configurar Python y Dependencias de Diseño
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Instalar herramientas de conversión
+      - name: Instalar Pandoc, Poppler y Motor Gráfico Pillow
         run: |
           sudo apt-get update
-          sudo apt-get install -y pandoc poppler-utils
+          sudo apt-get install -y pandoc poppler-utils fonts-dejavu-core fonts-liberation
+          pip install pillow
 
-      - name: Ejecutar Maquetador Editorial
-        run: |
-          python3 procesar_publicaciones.py
+      - name: Procesar borradores y diseñar portadas
+        run: python procesar_publicaciones.py
 
-      - name: Publicar cambios en el repositorio
+      - name: Guardar cambios y publicar en GitHub Pages
         run: |
-          git config --global user.name "Bot Eficiencia & Norma"
+          git config --global user.name "Director de Arte Eficiencia & Norma"
           git config --global user.email "bot@eficiencia-norma.cl"
           git add _posts/ assets/ _borradores/
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto: Publicación maquetada con gráficos y multimedia" && git push)
-
-      - name: Publicar cambios en el repositorio
-        run: |
-          git config --global user.name "Bot Eficiencia & Norma"
-          git config --global user.email "bot@eficiencia-norma.cl"
-          # Asegurar que Git capture tanto los posts como todas las imágenes nuevas
-          git add _posts/ assets/ _borradores/
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto: Publicación maquetada con imágenes y gráficos" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto: Publicación con portada de Director de Arte" && git push)
