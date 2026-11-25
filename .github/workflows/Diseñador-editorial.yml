@@ -15,19 +15,20 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Configurar Python y Dependencias de Diseño
+      - name: Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Instalar Pandoc, Poppler y Motor Gráfico Pillow
+      - name: Instalar Pandoc, Fuentes y Motor Gráfico Pillow
         run: |
           sudo apt-get update
           sudo apt-get install -y pandoc poppler-utils fonts-dejavu-core fonts-liberation
+          python -m pip install --upgrade pip
           pip install pillow
 
-      - name: Procesar borradores y diseñar portadas
-        run: python procesar_publicaciones.py
+      - name: Procesar borradores y maquetar
+        run: python3 procesar_publicaciones.py
 
       - name: Guardar cambios y publicar en GitHub Pages
         run: |
